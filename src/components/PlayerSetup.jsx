@@ -17,18 +17,33 @@ const PLAYER_COLORS = [
  * @param {Object} props
  * @param {number} props.minPlayers - Minimum players required
  * @param {number} props.maxPlayers - Maximum players allowed
- * @param {function} props.onStart - Callback with player array: [{name, color}]
- * @param {React.ReactNode} [props.extraContent] - Optional extra content per player (e.g. dinosaur picker)
+ * @param {function} props.onStart - Callback: (players, enabledHouseRules) => void
+ *   enabledHouseRules is a Set of rule IDs that are toggled on.
  * @param {function} [props.renderPlayerExtra] - Render function for extra player config: (playerIndex) => JSX
+ * @param {Array<{id: string, labelEN: string, labelES: string, default: boolean}>} [props.houseRulesConfig]
+ *   If provided, a House Rules section is shown. Empty/undefined = hidden.
  */
-export default function PlayerSetup({ minPlayers = 2, maxPlayers = 6, onStart, renderPlayerExtra }) {
-  const { t } = useI18n();
+export default function PlayerSetup({
+  minPlayers = 2,
+  maxPlayers = 6,
+  onStart,
+  renderPlayerExtra,
+  houseRulesConfig,
+}) {
+  const { t, locale } = useI18n();
   const [players, setPlayers] = useState(
     Array.from({ length: minPlayers }, (_, i) => ({
       name: '',
       color: PLAYER_COLORS[i % PLAYER_COLORS.length],
     }))
   );
+
+  // Initialise enabled house rules from their defaults
+  const [enabledRules, setEnabledRules] = useState(() => {
+    const set = new Set();
+    (houseRulesConfig || []).forEach((r) => { if (r.default) set.add(r.id); });
+    return set;
+  });
 
   const addPlayer = () => {
     if (players.length < maxPlayers) {
@@ -52,15 +67,24 @@ export default function PlayerSetup({ minPlayers = 2, maxPlayers = 6, onStart, r
     setPlayers(players.map((p, i) => (i === index ? { ...p, name } : p)));
   };
 
+  const toggleRule = (id) => {
+    setEnabledRules((prev) => {
+      const next = new Set(prev);
+      next.has(id) ? next.delete(id) : next.add(id);
+      return next;
+    });
+  };
+
   const handleStart = () => {
     const finalPlayers = players.map((p, i) => ({
       ...p,
       name: p.name.trim() || `${t('playerPlaceholder')} ${i + 1}`,
     }));
-    onStart(finalPlayers);
+    onStart(finalPlayers, enabledRules);
   };
 
   const canStart = players.length >= minPlayers;
+  const hasHouseRules = houseRulesConfig && houseRulesConfig.length > 0;
 
   return (
     <div className="space-y-4 animate-fade-in">
@@ -127,6 +151,37 @@ export default function PlayerSetup({ minPlayers = 2, maxPlayers = 6, onStart, r
           </svg>
           {t('addPlayer')}
         </button>
+      )}
+
+      {/* House Rules Section — only shown when game provides rules */}
+      {hasHouseRules && (
+        <div className="glass-card p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🏠</span>
+            <h3 className="font-heading font-semibold text-sm text-text-primary">{t('houseRules')}</h3>
+          </div>
+          <p className="text-text-muted text-xs">{t('houseRulesDesc')}</p>
+          <div className="space-y-2">
+            {houseRulesConfig.map((rule) => {
+              const label = locale === 'es' ? rule.labelES : rule.labelEN;
+              return (
+                <label
+                  key={rule.id}
+                  className="flex items-start gap-3 cursor-pointer"
+                  id={`house-rule-${rule.id}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={enabledRules.has(rule.id)}
+                    onChange={() => toggleRule(rule.id)}
+                    className="mt-0.5 accent-accent-purple"
+                  />
+                  <span className="text-xs text-text-secondary leading-relaxed">{label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
       )}
 
       {/* Start Button */}

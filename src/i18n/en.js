@@ -41,6 +41,11 @@ const en = {
   confirm: 'Confirm',
   nextRound: 'Next Round',
   finishRound: 'Finish Round',
+  restartGame: 'Restart Game',
+  confirmRestart: 'Restart this game? All progress will be lost.',
+  houseRules: 'House Rules',
+  houseRulesDesc: 'Optional rule variations for this game.',
+  hld_swissShears: 'Swiss Shears',
 
   // Share Card
   shareResults: 'Share Results',
