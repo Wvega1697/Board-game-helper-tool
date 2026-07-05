@@ -36,6 +36,7 @@ export default function Flip7Calculator() {
     return data;
   }, []);
 
+  // PlayerSetup passes (players, enabledRules) — Flip7 has no house rules, ignore second arg
   const handleStartGame = (playerList) => {
     const gamePlayers = playerList.map((p) => ({
       ...p,
@@ -264,15 +265,15 @@ export default function Flip7Calculator() {
       </div>
 
       {/* Scoreboard */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
         {players.map((player, i) => (
           <div
             key={i}
-            className="glass-card px-3 py-2 flex-shrink-0 text-center min-w-[70px]"
+            className="glass-card px-4 py-3 flex-shrink-0 text-center min-w-[76px]"
           >
-            <div className="w-2 h-2 rounded-full mx-auto mb-1" style={{ backgroundColor: player.color }} />
+            <div className="w-2 h-2 rounded-full mx-auto mb-1.5" style={{ backgroundColor: player.color }} />
             <div className="text-xs text-text-secondary truncate max-w-[60px]">{player.name}</div>
-            <div className="font-heading font-bold text-sm">{player.totalScore}</div>
+            <div className="font-heading font-bold text-sm mt-0.5">{player.totalScore}</div>
           </div>
         ))}
       </div>
@@ -288,7 +289,7 @@ export default function Flip7Calculator() {
           return (
             <div
               key={playerIdx}
-              className={`glass-card p-4 space-y-3 transition-opacity ${isDone ? 'opacity-60' : ''}`}
+              className={`glass-card p-5 space-y-4 transition-opacity ${isDone ? 'opacity-60' : ''}`}
               id={`player-card-${playerIdx}`}
             >
               {/* Player Name + Status */}
@@ -333,7 +334,7 @@ export default function Flip7Calculator() {
                   {/* Number buttons */}
                   <div>
                     <div className="text-text-muted text-xs mb-1.5">{t('flip7_numberCards')}</div>
-                    <div className="grid grid-cols-5 gap-1.5">
+                    <div className="grid grid-cols-5 gap-2">
                       {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                         <button
                           key={num}

@@ -41,6 +41,11 @@ const es = {
   confirm: 'Confirmar',
   nextRound: 'Siguiente Ronda',
   finishRound: 'Finalizar Ronda',
+  restartGame: 'Reiniciar Juego',
+  confirmRestart: '¿Reiniciar el juego? Se perderá todo el progreso.',
+  houseRules: 'Reglas de la Casa',
+  houseRulesDesc: 'Variaciones de reglas opcionales para este juego.',
+  hld_swissShears: 'Tijeras Suizas',
 
   // Share Card
   shareResults: 'Compartir Resultados',

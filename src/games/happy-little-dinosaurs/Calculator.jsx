@@ -46,6 +46,9 @@ export default function HLDCalculator() {
   const [roundNum, setRoundNum] = useSessionStorage('hld-round', 1);
   const [roundData, setRoundData] = useSessionStorage('hld-round-data', {});
   const [dinoSelections, setDinoSelections] = useSessionStorage('hld-dino-selections', {});
+  // House rules: Set of enabled rule IDs, stored as array in sessionStorage
+  const [enabledRulesArr, setEnabledRulesArr] = useSessionStorage('hld-house-rules', []);
+  const enabledRules = new Set(enabledRulesArr);
   const [showShare, setShowShare] = useState(false);
   const [cardSearch, setCardSearch] = useState('');
 
@@ -55,7 +58,9 @@ export default function HLDCalculator() {
     return dinosaurs.filter((d) => !selected.has(d.id));
   }, [dinoSelections]);
 
-  const handleStartSetup = (playerList) => {
+  const handleStartSetup = (playerList, selectedRules) => {
+    // selectedRules is a Set from PlayerSetup
+    setEnabledRulesArr([...selectedRules]);
     const gamePlayers = playerList.map((p) => ({
       ...p,
       escapeRoute: 0,
@@ -95,6 +100,7 @@ export default function HLDCalculator() {
           hasStarFruit: false,
           hasRockCandy: false,
           hasScoreInversion: false,
+          hasSwissShears: false,
           playedInstants: [],
         };
       }
@@ -121,12 +127,21 @@ export default function HLDCalculator() {
   const finishRound = () => {
     const disasterType = Object.values(roundData).find((d) => d.disasterType)?.disasterType || 'natural';
 
+    // Determine which players have Swiss Shears active (affects OTHER players)
+    const swissShearsPlayers = new Set(
+      players
+        .map((_, i) => i)
+        .filter((i) => roundData[i]?.hasSwissShears)
+    );
+
     // Calculate scores
     let scores = players.map((player, i) => {
       if (player.eliminated || !roundData[i]) {
         return { name: player.name, score: 0, idx: i };
       }
       const pd = roundData[i];
+      // Swiss Shears: if ANY other player activated it, this player's boosters/sappers are halved
+      const otherHasSwissShears = [...swissShearsPlayers].some((idx) => idx !== i);
       const { score } = calculateRoundScore({
         baseCardValue: parseInt(pd.pointCard) || 0,
         dinosaurId: player.dinosaurId,
@@ -135,6 +150,7 @@ export default function HLDCalculator() {
         scoreBoosterTotal: pd.scoreBoosterTotal,
         scoreSapperTotal: pd.scoreSapperTotal,
         hasStarFruit: pd.hasStarFruit,
+        hasSwissShears: otherHasSwissShears,
         hazardModifiers: (player.hazardCards || []).map((h) => h.scoringModifier),
         hazardCardCount: (player.disasterArea || []).length,
         hasRockCandy: pd.hasRockCandy,
@@ -166,9 +182,12 @@ export default function HLDCalculator() {
       const playerScore = scores.find((s) => s.idx === i);
       let newPlayer = { ...player };
 
-      // Winner advances by their final calculated score (house rule)
+      // Winner advances: by final score (house rule) or by point card value (official)
       if (outcome.winner === player.name && playerScore) {
-        const pointsToAdd = playerScore.score || 0;
+        const useScoreMovement = enabledRules.has('scoreBasedMovement');
+        const pointsToAdd = useScoreMovement
+          ? (playerScore.score || 0)
+          : (parseInt(roundData[i]?.pointCard) || 0);
         newPlayer.escapeRoute = advanceEscapeRoute(
           player.escapeRoute,
           pointsToAdd,
@@ -228,6 +247,7 @@ export default function HLDCalculator() {
     setRoundNum(1);
     setRoundData({});
     setDinoSelections({});
+    setEnabledRulesArr([]);
     setShowShare(false);
   };
 
@@ -251,6 +271,7 @@ export default function HLDCalculator() {
         minPlayers={config.minPlayers}
         maxPlayers={config.maxPlayers}
         onStart={handleStartSetup}
+        houseRulesConfig={config.houseRules}
       />
     );
   }
@@ -264,13 +285,13 @@ export default function HLDCalculator() {
         </h2>
 
         {players.map((player, playerIdx) => (
-          <div key={playerIdx} className="glass-card p-4 space-y-3">
+          <div key={playerIdx} className="glass-card p-5 space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
               <span className="font-medium">{player.name || `${t('playerPlaceholder')} ${playerIdx + 1}`}</span>
             </div>
 
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               {dinosaurs.map((dino) => {
                 const isSelected = dinoSelections[playerIdx] === dino.id;
                 const isTaken = Object.entries(dinoSelections).some(
@@ -282,7 +303,7 @@ export default function HLDCalculator() {
                     key={dino.id}
                     onClick={() => !isTaken && selectDino(playerIdx, dino.id)}
                     disabled={isTaken}
-                    className={`p-3 rounded-xl text-left transition-all ${
+                    className={`p-3.5 rounded-2xl text-left transition-all ${
                       isSelected
                         ? 'border-2 shadow-lg'
                         : isTaken
@@ -296,7 +317,7 @@ export default function HLDCalculator() {
                     }
                     id={`dino-${playerIdx}-${dino.id}`}
                   >
-                    <div className="flex items-center gap-2 mb-1">
+                    <div className="flex items-center gap-2 mb-1.5">
                       <div
                         className="w-3 h-3 rounded-full"
                         style={{ backgroundColor: dino.color }}
@@ -310,7 +331,7 @@ export default function HLDCalculator() {
                         </span>
                       )}
                     </div>
-                    <p className="text-text-muted text-[10px] leading-tight">
+                    <p className="text-text-muted text-[10px] leading-snug">
                       {getTraitDesc(dino, locale)}
                     </p>
                   </button>
@@ -488,17 +509,17 @@ export default function HLDCalculator() {
       </div>
 
       {/* Escape Route Mini */}
-      <div className="flex gap-2 overflow-x-auto pb-2">
+      <div className="flex gap-3 overflow-x-auto pb-2 -mx-1 px-1">
         {players.map((player, i) => (
           <div
             key={i}
-            className={`glass-card px-3 py-2 flex-shrink-0 text-center min-w-[70px] ${player.eliminated ? 'opacity-30' : ''}`}
+            className={`glass-card px-4 py-3 flex-shrink-0 text-center min-w-[76px] ${player.eliminated ? 'opacity-30' : ''}`}
           >
-            <div className="w-2 h-2 rounded-full mx-auto mb-1" style={{ backgroundColor: player.color }} />
+            <div className="w-2 h-2 rounded-full mx-auto mb-1.5" style={{ backgroundColor: player.color }} />
             <div className="text-[10px] text-text-secondary truncate max-w-[60px]">{player.name}</div>
-            <div className="font-heading font-bold text-sm">{player.escapeRoute}/50</div>
+            <div className="font-heading font-bold text-sm mt-0.5">{player.escapeRoute}/50</div>
             {player.disasterArea?.length > 0 && (
-              <div className="text-[9px] text-text-muted">{player.disasterArea.length}💀</div>
+              <div className="text-[9px] text-text-muted mt-0.5">{player.disasterArea.length}💀</div>
             )}
           </div>
         ))}
@@ -507,7 +528,7 @@ export default function HLDCalculator() {
       {/* Disaster Type Selector (once for the round) */}
       <div className="glass-card p-4">
         <h3 className="text-sm font-medium text-text-secondary mb-2">{t('hld_disasterType')}</h3>
-        <div className="grid grid-cols-4 gap-2">
+        <div className="grid grid-cols-4 gap-2.5">
           {DISASTER_TYPES.map((type) => {
             const isSelected = roundData[activePlayers[0]?.idx]?.disasterType === type;
             return (
@@ -523,7 +544,7 @@ export default function HLDCalculator() {
                   });
                   setRoundData(updated);
                 }}
-                className={`p-2 rounded-xl text-center transition-all ${
+                className={`p-3 rounded-xl text-center transition-all ${
                   isSelected
                     ? 'border-2 shadow-lg'
                     : 'bg-bg-secondary/50 border border-border-glass hover:border-border-glass-hover'
@@ -547,7 +568,10 @@ export default function HLDCalculator() {
         const disasterType = roundData[activePlayers[0]?.idx]?.disasterType || 'natural';
         const dino = dinosaurs.find((d) => d.id === player.dinosaurId);
         
-        // Calculate live score for this player
+        // Live score: reflect Swiss Shears from other players
+        const otherHasShearsLive = activePlayers.some(
+          (op) => op.idx !== player.idx && roundData[op.idx]?.hasSwissShears
+        );
         const { score: currentLiveScore, traitBonus } = calculateRoundScore({
           baseCardValue: parseInt(pd.pointCard) || 0,
           dinosaurId: player.dinosaurId,
@@ -556,35 +580,35 @@ export default function HLDCalculator() {
           scoreBoosterTotal: pd.scoreBoosterTotal,
           scoreSapperTotal: pd.scoreSapperTotal,
           hasStarFruit: pd.hasStarFruit,
-          hasSwissShears: false, // Could be added as a global toggle later if needed
+          hasSwissShears: otherHasShearsLive,
           hazardModifiers: (player.hazardCards || []).map((h) => h.scoringModifier),
           hazardCardCount: (player.disasterArea || []).length,
           hasRockCandy: pd.hasRockCandy,
         });
 
         return (
-          <div key={player.idx} className="glass-card p-4 space-y-3" id={`player-card-${player.idx}`}>
+          <div key={player.idx} className="glass-card p-5 space-y-4" id={`player-card-${player.idx}`}>
             {/* Player header */}
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-                <span className="font-medium">{player.name}</span>
+            <div className="flex items-center justify-between gap-3">
+              <div className="flex items-center gap-2 min-w-0">
+                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: player.color }} />
+                <span className="font-medium truncate">{player.name}</span>
                 {dino && (
-                  <span className="text-text-muted text-xs hidden sm:inline-block">
+                  <span className="text-text-muted text-xs hidden sm:inline-block truncate">
                     {getDinosaurName(dino, locale)}
                   </span>
                 )}
               </div>
-              <div className="flex items-center gap-2">
-                <span className="text-text-muted text-xs uppercase tracking-wide">Live Score:</span>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <span className="text-text-muted text-[10px] uppercase tracking-wide whitespace-nowrap">Score:</span>
                 <span className="font-heading font-bold text-xl text-accent-purple">{currentLiveScore}</span>
               </div>
             </div>
 
             {/* Point Card */}
             <div>
-              <label className="text-text-muted text-xs mb-1 block">{t('hld_pointCard')} (0–9)</label>
-              <div className="grid grid-cols-5 gap-1.5">
+              <label className="text-text-muted text-xs mb-1.5 block">{t('hld_pointCard')} (0–9)</label>
+              <div className="grid grid-cols-5 gap-2">
                 {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
                   <button
                     key={num}
@@ -612,9 +636,9 @@ export default function HLDCalculator() {
             )}
 
             {/* Quick Modifiers */}
-            <div className="grid grid-cols-2 gap-2">
+            <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="text-text-muted text-[10px] mb-1 block">Score Booster (+2)</label>
+                <label className="text-text-muted text-[10px] mb-1.5 block">Score Booster (+2)</label>
                 <input
                   type="number"
                   value={pd.scoreBoosterTotal || ''}
@@ -625,7 +649,7 @@ export default function HLDCalculator() {
                 />
               </div>
               <div>
-                <label className="text-text-muted text-[10px] mb-1 block">Score Sapper (-2)</label>
+                <label className="text-text-muted text-[10px] mb-1.5 block">Score Sapper (-2)</label>
                 <input
                   type="number"
                   value={pd.scoreSapperTotal || ''}
@@ -637,8 +661,8 @@ export default function HLDCalculator() {
               </div>
             </div>
 
-            <div className="flex gap-2">
-              <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
+            <div className="flex flex-wrap gap-x-5 gap-y-2.5">
+              <label className="flex items-center gap-2 text-xs text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   checked={pd.hasRockCandy}
@@ -647,7 +671,7 @@ export default function HLDCalculator() {
                 />
                 Rock Candy
               </label>
-              <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   checked={pd.hasStarFruit}
@@ -656,7 +680,7 @@ export default function HLDCalculator() {
                 />
                 Star Fruit
               </label>
-              <label className="flex items-center gap-1.5 text-xs text-text-secondary cursor-pointer">
+              <label className="flex items-center gap-2 text-xs text-text-secondary cursor-pointer">
                 <input
                   type="checkbox"
                   checked={pd.hasScoreInversion}
@@ -665,11 +689,21 @@ export default function HLDCalculator() {
                 />
                 Inversion
               </label>
+              <label className="flex items-center gap-2 text-xs text-text-secondary cursor-pointer" title={t('hld_swissShears')}>
+                <input
+                  type="checkbox"
+                  checked={pd.hasSwissShears}
+                  onChange={(e) => updateRoundField(player.idx, 'hasSwissShears', e.target.checked)}
+                  className="accent-accent-purple"
+                  id={`swiss-shears-${player.idx}`}
+                />
+                {t('hld_swissShears')}
+              </label>
             </div>
 
             {/* Extra points */}
             <div>
-              <label className="text-text-muted text-[10px] mb-1 block">
+              <label className="text-text-muted text-[10px] mb-1.5 block">
                 {t('hld_instantCards')} (+/- pts)
               </label>
               <input

@@ -1,5 +1,6 @@
 const flip7Config = {
   id: 'flip7',
+  storagePrefix: 'flip7',
   name: 'Flip 7',
   minPlayers: 2,
   maxPlayers: 6,
