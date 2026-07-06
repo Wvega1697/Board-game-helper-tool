@@ -165,6 +165,28 @@ const es = {
   wp_bd_boosterBonus: 'Cartas potenciadoras',
   wp_bd_synergyBonus: 'Bonificación de sinergia',
   wp_bd_rainbowBonus: 'Bonificación de arcoíris',
+
+  // 7 Wonders Architects
+  '7wa_description': '¡Construye tu maravilla y deja tu huella en la historia!',
+  '7wa_chooseWonder': 'Elige tu maravilla',
+  '7wa_startScoring': 'Iniciar Puntuación',
+  '7wa_calculateScores': 'Calcular Puntuaciones',
+  '7wa_wonderPoints': 'Puntos de Maravilla',
+  '7wa_stagesConstructed': 'Fases Construidas',
+  '7wa_bluePoints': 'Puntos Azules',
+  '7wa_blueCatIcons': 'Iconos de Gato Azules',
+  '7wa_militaryPoints': 'Puntos Militares',
+  '7wa_militaryTokensCount': 'Fichas Militares',
+  '7wa_progressPoints': 'Puntos de Progreso',
+  '7wa_progressTokensCount': 'Fichas de Progreso',
+  '7wa_catPawn': 'Peón de Gato',
+  '7wa_stages': 'fases',
+  '7wa_showResults': 'Mostrar Resultados',
+  '7wa_tokenDecor': 'Arte',
+  '7wa_tokenPolitics': 'Política',
+  '7wa_tokenStrategy': 'Estrategia',
+  '7wa_tokenEducation': 'Educación',
+  '7wa_tokenCulture': 'Cultura',
 };
 
 export default es;

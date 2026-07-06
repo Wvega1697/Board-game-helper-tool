@@ -165,6 +165,28 @@ const en = {
   wp_bd_boosterBonus: 'Booster cards',
   wp_bd_synergyBonus: 'Synergy bonus',
   wp_bd_rainbowBonus: 'Rainbow bonus',
+
+  // 7 Wonders Architects
+  '7wa_description': 'Build your wonder and leave your mark on history!',
+  '7wa_chooseWonder': 'Choose your wonder',
+  '7wa_startScoring': 'Start Scoring',
+  '7wa_calculateScores': 'Calculate Scores',
+  '7wa_wonderPoints': 'Wonder Points',
+  '7wa_stagesConstructed': 'Stages Constructed',
+  '7wa_bluePoints': 'Blue Points',
+  '7wa_blueCatIcons': 'Blue Cat Icons',
+  '7wa_militaryPoints': 'Military Points',
+  '7wa_militaryTokensCount': 'Military Tokens',
+  '7wa_progressPoints': 'Progress Points',
+  '7wa_progressTokensCount': 'Progress Tokens',
+  '7wa_catPawn': 'Cat Pawn',
+  '7wa_stages': 'stages',
+  '7wa_showResults': 'Show Results',
+  '7wa_tokenDecor': 'Art',
+  '7wa_tokenPolitics': 'Politics',
+  '7wa_tokenStrategy': 'Strategy',
+  '7wa_tokenEducation': 'Education',
+  '7wa_tokenCulture': 'Culture',
 };
 
 export default en;

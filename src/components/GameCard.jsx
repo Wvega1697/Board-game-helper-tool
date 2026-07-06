@@ -11,7 +11,7 @@ export default function GameCard({ game, index = 0 }) {
       style={{ animationDelay: `${index * 80}ms`, animationFillMode: 'both' }}
       id={`game-card-${game.id}`}
     >
-      <div className="flex items-start gap-4">
+      <div className="flex items-center gap-4">
         {/* Game Icon */}
         <div className="text-4xl flex-shrink-0 group-hover:scale-110 transition-transform duration-300" style={{ animation: 'float 3s ease-in-out infinite', animationDelay: `${index * 200}ms` }}>
           {game.icon}
@@ -62,7 +62,7 @@ export default function GameCard({ game, index = 0 }) {
         </div>
 
         {/* Arrow */}
-        <div className="flex-shrink-0 text-text-muted group-hover:text-accent-teal group-hover:translate-x-1 transition-all duration-300 mt-1">
+        <div className="flex-shrink-0 text-text-muted group-hover:text-accent-teal group-hover:translate-x-1 transition-all duration-300">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <polyline points="9,18 15,12 9,6" />
           </svg>
