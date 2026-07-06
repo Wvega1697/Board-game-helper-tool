@@ -139,6 +139,32 @@ const en = {
   munchkin_adventurers: 'adventurers',
   munchkin_confirmWin: 'Are you sure {player} reached Level 10 and wins the game?',
   munchkin_lowestLevel: 'Lower',
+
+  // Wrong Party
+  wp_description: 'Draft guests, match the theme, and throw the most chaotic party to win!',
+  wp_activeTheme: 'Active Theme',
+  wp_theme: 'Theme',
+  wp_selectTheme: 'Select theme card…',
+  wp_themeType: 'Theme type',
+  wp_themeAttributes: 'Attributes',
+  wp_searchGuest: 'Search guest cards…',
+  wp_roundResult: 'Round Result',
+  wp_targetScore: 'Target: 3 rounds',
+  wp_hypnotistActive: 'Hypnotist Active',
+  wp_influencerAttr: 'Influencer Like',
+  wp_selectAttribute: 'Select attribute',
+  wp_partyPlannerOverride: 'Party Planner — Theme Override',
+  wp_declarePlannerType: 'Declare theme type…',
+  wp_selectThemeFirst: 'Select a theme card before finishing the round.',
+  wp_showDetails: 'Details',
+  wp_hideDetails: 'Hide',
+  wp_bd_basePoints: 'Base points',
+  wp_bd_themeBonus: 'Theme match',
+  wp_bd_likesPoints: 'Likes matching',
+  wp_bd_dislikesPoints: 'Dislikes matching',
+  wp_bd_boosterBonus: 'Booster cards',
+  wp_bd_synergyBonus: 'Synergy bonus',
+  wp_bd_rainbowBonus: 'Rainbow bonus',
 };
 
 export default en;

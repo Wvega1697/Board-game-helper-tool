@@ -139,6 +139,32 @@ const es = {
   munchkin_adventurers: 'aventureros',
   munchkin_confirmWin: '¿Estás seguro de que {player} llegó al Nivel 10 y ganó la partida?',
   munchkin_lowestLevel: 'Más bajo',
+
+  // Wrong Party
+  wp_description: '¡Recluta invitados, combina el tema y organiza la fiesta más caótica para ganar!',
+  wp_activeTheme: 'Tema Activo',
+  wp_theme: 'Tema',
+  wp_selectTheme: 'Seleccionar carta de tema…',
+  wp_themeType: 'Tipo de tema',
+  wp_themeAttributes: 'Atributos',
+  wp_searchGuest: 'Buscar cartas de invitados…',
+  wp_roundResult: 'Resultado de Ronda',
+  wp_targetScore: 'Meta: 3 rondas',
+  wp_hypnotistActive: 'Hipnotista Activo',
+  wp_influencerAttr: 'Like del Influencer',
+  wp_selectAttribute: 'Seleccionar atributo',
+  wp_partyPlannerOverride: 'Organizador — Cambio de Tema',
+  wp_declarePlannerType: 'Declarar tipo de tema…',
+  wp_selectThemeFirst: 'Selecciona una carta de tema antes de terminar la ronda.',
+  wp_showDetails: 'Detalles',
+  wp_hideDetails: 'Ocultar',
+  wp_bd_basePoints: 'Puntos base',
+  wp_bd_themeBonus: 'Coincidencia de tema',
+  wp_bd_likesPoints: 'Likes coincidentes',
+  wp_bd_dislikesPoints: 'Dislikes coincidentes',
+  wp_bd_boosterBonus: 'Cartas potenciadoras',
+  wp_bd_synergyBonus: 'Bonificación de sinergia',
+  wp_bd_rainbowBonus: 'Bonificación de arcoíris',
 };
 
 export default es;

@@ -18,6 +18,7 @@ export function useSessionStorage(key, initialValue) {
   useEffect(() => {
     try {
       sessionStorage.setItem(key, JSON.stringify(value));
+      window.dispatchEvent(new Event('session-storage-update'));
     } catch {
       // Storage full or unavailable
     }
@@ -27,6 +28,7 @@ export function useSessionStorage(key, initialValue) {
     setValue(initialValue);
     try {
       sessionStorage.removeItem(key);
+      window.dispatchEvent(new Event('session-storage-update'));
     } catch {
       // Ignore
     }

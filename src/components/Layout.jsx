@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../i18n/index.jsx';
 import LanguageSwitcher from './LanguageSwitcher.jsx';
@@ -8,6 +9,13 @@ export default function Layout() {
   const location = useLocation();
   const { t } = useI18n();
   const isHome = location.pathname === '/';
+  const [sessionVer, setSessionVer] = useState(0);
+
+  useEffect(() => {
+    const handleUpdate = () => setSessionVer((v) => v + 1);
+    window.addEventListener('session-storage-update', handleUpdate);
+    return () => window.removeEventListener('session-storage-update', handleUpdate);
+  }, []);
 
   // Resolve the active game from the URL, then read its phase from sessionStorage.
   // storagePrefix comes from each game's config (e.g. 'hld', 'flip7').

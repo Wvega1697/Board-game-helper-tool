@@ -45,8 +45,10 @@ export default function PlayerSetup({
     return set;
   });
 
+  const effectiveMaxPlayers = enabledRules.has('morePlayers') ? 8 : maxPlayers;
+
   const addPlayer = () => {
-    if (players.length < maxPlayers) {
+    if (players.length < effectiveMaxPlayers) {
       setPlayers([
         ...players,
         {
@@ -70,7 +72,14 @@ export default function PlayerSetup({
   const toggleRule = (id) => {
     setEnabledRules((prev) => {
       const next = new Set(prev);
-      next.has(id) ? next.delete(id) : next.add(id);
+      if (next.has(id)) {
+        next.delete(id);
+        if (id === 'morePlayers' && players.length > maxPlayers) {
+          setPlayers(players.slice(0, maxPlayers));
+        }
+      } else {
+        next.add(id);
+      }
       return next;
     });
   };
@@ -88,6 +97,37 @@ export default function PlayerSetup({
 
   return (
     <div className="space-y-4 animate-fade-in">
+      {/* House Rules Section — only shown when game provides rules */}
+      {hasHouseRules && (
+        <div className="glass-card p-4 space-y-3">
+          <div className="flex items-center gap-2">
+            <span className="text-base">🏠</span>
+            <h3 className="font-heading font-semibold text-sm text-text-primary">{t('houseRules')}</h3>
+          </div>
+          <p className="text-text-muted text-xs">{t('houseRulesDesc')}</p>
+          <div className="space-y-2">
+            {houseRulesConfig.map((rule) => {
+              const label = locale === 'es' ? rule.labelES : rule.labelEN;
+              return (
+                <label
+                  key={rule.id}
+                  className="flex items-start gap-3 cursor-pointer"
+                  id={`house-rule-${rule.id}`}
+                >
+                  <input
+                    type="checkbox"
+                    checked={enabledRules.has(rule.id)}
+                    onChange={() => toggleRule(rule.id)}
+                    className="mt-0.5 accent-accent-purple"
+                  />
+                  <span className="text-xs text-text-secondary leading-relaxed">{label}</span>
+                </label>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       <h2 className="font-heading text-xl font-bold text-text-primary">
         {t('playerSetup')}
       </h2>
@@ -140,7 +180,7 @@ export default function PlayerSetup({
       </div>
 
       {/* Add Player Button */}
-      {players.length < maxPlayers && (
+      {players.length < effectiveMaxPlayers && (
         <button
           onClick={addPlayer}
           className="btn btn-secondary w-full"
@@ -151,37 +191,6 @@ export default function PlayerSetup({
           </svg>
           {t('addPlayer')}
         </button>
-      )}
-
-      {/* House Rules Section — only shown when game provides rules */}
-      {hasHouseRules && (
-        <div className="glass-card p-4 space-y-3">
-          <div className="flex items-center gap-2">
-            <span className="text-base">🏠</span>
-            <h3 className="font-heading font-semibold text-sm text-text-primary">{t('houseRules')}</h3>
-          </div>
-          <p className="text-text-muted text-xs">{t('houseRulesDesc')}</p>
-          <div className="space-y-2">
-            {houseRulesConfig.map((rule) => {
-              const label = locale === 'es' ? rule.labelES : rule.labelEN;
-              return (
-                <label
-                  key={rule.id}
-                  className="flex items-start gap-3 cursor-pointer"
-                  id={`house-rule-${rule.id}`}
-                >
-                  <input
-                    type="checkbox"
-                    checked={enabledRules.has(rule.id)}
-                    onChange={() => toggleRule(rule.id)}
-                    className="mt-0.5 accent-accent-purple"
-                  />
-                  <span className="text-xs text-text-secondary leading-relaxed">{label}</span>
-                </label>
-              );
-            })}
-          </div>
-        </div>
       )}
 
       {/* Start Button */}
