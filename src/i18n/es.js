@@ -139,6 +139,10 @@ const es = {
   munchkin_adventurers: 'aventureros',
   munchkin_confirmWin: '¿Estás seguro de que {player} llegó al Nivel 10 y ganó la partida?',
   munchkin_lowestLevel: 'Más bajo',
+  munchkin_levelsLost: 'Niveles perdidos (Bad Stuff)',
+  munchkin_badStuffHint: '✓ = Escapaste · Elige niveles perdidos según el Bad Stuff del monstruo',
+  munchkin_applyBadStuff: 'Aplicar Bad Stuff (−{levels})',
+  munchkin_ranAway: '¡Escapaste! ✓',
 
   // Wrong Party
   wp_description: '¡Recluta invitados, combina el tema y organiza la fiesta más caótica para ganar!',

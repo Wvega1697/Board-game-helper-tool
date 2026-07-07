@@ -139,6 +139,10 @@ const en = {
   munchkin_adventurers: 'adventurers',
   munchkin_confirmWin: 'Are you sure {player} reached Level 10 and wins the game?',
   munchkin_lowestLevel: 'Lower',
+  munchkin_levelsLost: 'Levels lost (Bad Stuff)',
+  munchkin_badStuffHint: '✓ = Ran away safely · Pick levels lost from the monster\'s Bad Stuff',
+  munchkin_applyBadStuff: 'Apply Bad Stuff (−{levels})',
+  munchkin_ranAway: 'Ran Away! ✓',
 
   // Wrong Party
   wp_description: 'Draft guests, match the theme, and throw the most chaotic party to win!',

@@ -32,7 +32,7 @@ function cycleClass(current, otherClass = null) {
 }
 
 function initBattle(playerIdx) {
-  return { playerIdx, equipment: 0, modifiers: 0, helperIdx: null, helperEquipment: 0, monsters: [{ level: 0, modifiers: 0 }], levelsGained: 1 };
+  return { playerIdx, equipment: 0, modifiers: 0, helperIdx: null, helperEquipment: 0, monsters: [{ level: 0, modifiers: 0 }], levelsGained: 1, levelsLost: 0, showBadStuff: false };
 }
 
 export default function MunchkinCalculator() {
@@ -144,6 +144,15 @@ export default function MunchkinCalculator() {
     setPlayers(updated);
     const result = checkWinner(updated.map((p) => ({ name: p.name, level: p.level })), config.targetLevel, 'kill');
     if (result.isOver) setPhase(PHASES.GAME_OVER);
+  };
+
+  const applyBadStuff = () => {
+    const { playerIdx, levelsLost } = battle;
+    if (levelsLost > 0) {
+      const newLevel = applyLevelDelta(players[playerIdx].level, -levelsLost);
+      setPlayers(players.map((p, i) => (i === playerIdx ? { ...p, level: newLevel } : p)));
+    }
+    setBattle(null);
   };
 
   const newGame = () => { setPhase(PHASES.SETUP); setPlayers([]); setCharSelections({}); setBattle(null); setShowShare(false); setOpenSetLevel(null); };
@@ -367,7 +376,7 @@ export default function MunchkinCalculator() {
 
               {!isBattleOpen
                 ? <button onClick={() => openBattleFor(playerIdx)} className="btn btn-primary w-full font-semibold" id={`btn-battle-${playerIdx}`}>⚔️ {t('munchkin_battle')}</button>
-                : <BattlePanel battle={battle} battleResult={battleResult} player={player} players={players} playerIdx={playerIdx} updateBattle={updateBattle} updateBattleMonster={updateBattleMonster} addMonster={addMonster} applyBattleReward={applyBattleReward} cancelBattle={cancelBattle} t={t} />
+                : <BattlePanel battle={battle} battleResult={battleResult} player={player} players={players} playerIdx={playerIdx} updateBattle={updateBattle} updateBattleMonster={updateBattleMonster} addMonster={addMonster} applyBattleReward={applyBattleReward} applyBadStuff={applyBadStuff} cancelBattle={cancelBattle} t={t} />
               }
             </div>
           );
@@ -378,7 +387,7 @@ export default function MunchkinCalculator() {
 }
 
 // BattlePanel — kept in same file (single usage, no reason for a separate module)
-function BattlePanel({ battle, battleResult, player, players, playerIdx, updateBattle, updateBattleMonster, addMonster, applyBattleReward, cancelBattle, t }) {
+function BattlePanel({ battle, battleResult, player, players, playerIdx, updateBattle, updateBattleMonster, addMonster, applyBattleReward, applyBadStuff, cancelBattle, t }) {
   return (
     <div className="border-t border-border-glass pt-4 space-y-4 animate-fade-in">
       <div className="flex items-center justify-between">
@@ -454,9 +463,15 @@ function BattlePanel({ battle, battleResult, player, players, playerIdx, updateB
               <div className="font-heading font-black text-3xl text-danger">{battleResult.monsterStrength}</div>
             </div>
           </div>
-          <div className={`text-center font-heading font-bold text-base py-1.5 rounded-lg ${battleResult.youWin ? 'bg-success/20 text-success' : 'bg-danger/20 text-danger'}`}>
-            {battleResult.youWin ? t('munchkin_youWin') : t('munchkin_monsterWins')}
-          </div>
+          {battleResult.youWin ? (
+            <div className="text-center font-heading font-bold text-base py-1.5 rounded-lg bg-success/20 text-success">
+              {t('munchkin_youWin')}
+            </div>
+          ) : (
+            <button onClick={() => updateBattle({ showBadStuff: !battle.showBadStuff })} className="w-full text-center font-heading font-bold text-base py-1.5 rounded-lg bg-danger/20 text-danger hover:bg-danger/30 transition-all cursor-pointer" id={`btn-bad-stuff-${playerIdx}`}>
+              {t('munchkin_monsterWins')} {battle.showBadStuff ? '▲' : '▼'}
+            </button>
+          )}
           {battleResult.youWin && (
             <div className="space-y-2.5">
               <div className="text-text-muted text-xs">{t('munchkin_levelsGained')}</div>
@@ -468,6 +483,22 @@ function BattlePanel({ battle, battleResult, player, players, playerIdx, updateB
                 ))}
               </div>
               <button onClick={applyBattleReward} className="btn btn-primary w-full font-semibold" id={`btn-apply-reward-${playerIdx}`}>{t('munchkin_applyReward')} (+{battle.levelsGained})</button>
+            </div>
+          )}
+          {!battleResult.youWin && battle.showBadStuff && (
+            <div className="space-y-2.5 animate-fade-in">
+              <div className="text-text-muted text-xs">{t('munchkin_levelsLost')}</div>
+              <div className="flex gap-1.5 flex-wrap">
+                {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => (
+                  <button key={n} onClick={() => updateBattle({ levelsLost: n })}
+                    className={`w-9 h-9 rounded-lg text-sm font-heading font-bold transition-all ${battle.levelsLost === n ? 'bg-danger/30 text-danger border-2 border-danger/60' : 'bg-bg-secondary border border-border-glass hover:border-border-glass-hover text-text-secondary'}`}
+                    id={`btn-lose-levels-${playerIdx}-${n}`}>{n === 0 ? '✓' : `-${n}`}</button>
+                ))}
+              </div>
+              <div className="text-[10px] text-text-muted">{t('munchkin_badStuffHint')}</div>
+              <button onClick={applyBadStuff} className="btn w-full font-semibold bg-danger/20 text-danger border border-danger/40 hover:bg-danger/30" id={`btn-apply-bad-stuff-${playerIdx}`}>
+                {battle.levelsLost === 0 ? t('munchkin_ranAway') : t('munchkin_applyBadStuff', { levels: battle.levelsLost })}
+              </button>
             </div>
           )}
         </div>
