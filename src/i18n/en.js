@@ -195,6 +195,20 @@ const en = {
   '7wa_strategyDesc': '+1 VP per military victory token.',
   '7wa_educationDesc': '+2 VP per progress token you own.',
   '7wa_cultureDesc': '+4 VP for 1 token, +12 VP for both.',
+
+  // Everdell
+  everdell_description: 'Build a city of critters and constructions in the valley of Everdell!',
+  everdell_calculateScores: 'Calculate Scores',
+  everdell_baseCardPoints: 'Card Points',
+  everdell_pointTokens: 'Point Tokens',
+  everdell_prosperityBonus: 'Prosperity Bonus',
+  everdell_journeyPoints: 'Journey Points',
+  everdell_eventPoints: 'Event Points',
+  everdell_eventsAchieved: 'Events Achieved',
+  everdell_leftoverResources: 'Leftover Resources',
+  everdell_tiebreakHint: 'Tiebreakers: most events → most resources',
+  everdell_showResults: 'Show Results',
+  everdell_events: 'events',
 };
 
 export default en;

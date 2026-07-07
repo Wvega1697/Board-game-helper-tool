@@ -195,6 +195,20 @@ const es = {
   '7wa_strategyDesc': '+1 PV por marcador de victoria militar.',
   '7wa_educationDesc': '+2 PV por cada ficha de Progreso que tengas.',
   '7wa_cultureDesc': '+4 PV por 1 ficha, +12 PV por las dos.',
+
+  // Everdell
+  everdell_description: '¡Construye una ciudad de criaturas y construcciones en el valle de Everdell!',
+  everdell_calculateScores: 'Calcular Puntuaciones',
+  everdell_baseCardPoints: 'Puntos de Cartas',
+  everdell_pointTokens: 'Fichas de Puntos',
+  everdell_prosperityBonus: 'Bonus de Prosperidad',
+  everdell_journeyPoints: 'Puntos de Viaje',
+  everdell_eventPoints: 'Puntos de Eventos',
+  everdell_eventsAchieved: 'Eventos Logrados',
+  everdell_leftoverResources: 'Recursos Sobrantes',
+  everdell_tiebreakHint: 'Desempate: más eventos → más recursos',
+  everdell_showResults: 'Mostrar Resultados',
+  everdell_events: 'eventos',
 };
 
 export default es;
