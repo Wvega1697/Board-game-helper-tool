@@ -187,6 +187,14 @@ const en = {
   '7wa_tokenStrategy': 'Strategy',
   '7wa_tokenEducation': 'Education',
   '7wa_tokenCulture': 'Culture',
+  '7wa_next': 'Next',
+  '7wa_chooseTokens': 'Progress Tokens',
+  '7wa_catPawnDesc': '+2 VP at the end of the game.',
+  '7wa_artDesc': '+4 VP if Wonder under construction, +6 VP if complete.',
+  '7wa_politicsDesc': '+1 VP per cat icon on your blue cards.',
+  '7wa_strategyDesc': '+1 VP per military victory token.',
+  '7wa_educationDesc': '+2 VP per progress token you own.',
+  '7wa_cultureDesc': '+4 VP for 1 token, +12 VP for both.',
 };
 
 export default en;

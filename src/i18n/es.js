@@ -187,6 +187,14 @@ const es = {
   '7wa_tokenStrategy': 'Estrategia',
   '7wa_tokenEducation': 'Educación',
   '7wa_tokenCulture': 'Cultura',
+  '7wa_next': 'Siguiente',
+  '7wa_chooseTokens': 'Fichas de Progreso',
+  '7wa_catPawnDesc': '+2 PV al final de la partida.',
+  '7wa_artDesc': '+4 PV si la Maravilla está en construcción, +6 PV si está completada.',
+  '7wa_politicsDesc': '+1 PV por icono de gato en tus cartas Azules.',
+  '7wa_strategyDesc': '+1 PV por marcador de victoria militar.',
+  '7wa_educationDesc': '+2 PV por cada ficha de Progreso que tengas.',
+  '7wa_cultureDesc': '+4 PV por 1 ficha, +12 PV por las dos.',
 };
 
 export default es;
