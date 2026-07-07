@@ -8,9 +8,7 @@ export function calculateFinalScore({
   hasCatPawn = false,
   bluePoints = 0,
   blueCatIcons = 0,
-  militaryPoints = 0,
   militaryTokens = 0,
-  progressPoints = 0,
   progressTokens = 0,
   hasDecor = false,
   hasPolitics = false,
@@ -18,17 +16,19 @@ export function calculateFinalScore({
   hasEducation = false,
   cultureTokens = 0
 }) {
-  let score = wonderPoints + bluePoints + militaryPoints + progressPoints;
+  // Military: 3 VP per token, +1 VP per token if Strategy
+  const militaryVP = militaryTokens * (hasStrategy ? 4 : 3);
+
+  let score = wonderPoints + bluePoints + militaryVP;
   if (hasCatPawn) score += 2;
-  
+
   if (hasDecor) score += stagesConstructed === 5 ? 6 : 4;
   if (hasPolitics) score += blueCatIcons;
-  if (hasStrategy) score += militaryTokens;
   if (hasEducation) score += (progressTokens * 2);
-  
+
   if (cultureTokens === 1) score += 4;
   else if (cultureTokens >= 2) score += 12;
-  
+
   return score;
 }
 

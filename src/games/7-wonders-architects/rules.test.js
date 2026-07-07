@@ -8,12 +8,11 @@ describe('7 Wonders Architects rules', () => {
       wonderPoints: 10,
       hasCatPawn: true,
       bluePoints: 7,
-      militaryPoints: 12,
-      progressPoints: 0,
+      militaryTokens: 4,       // 4 tokens × 3 VP = 12
       progressTokens: 2,
-      hasEducation: true
+      hasEducation: true        // 2 tokens × 2 VP = 4
     });
-    expect(score).toBe(10 + 2 + 7 + 12 + 0 + (2 * 2)); // 35
+    expect(score).toBe(10 + 2 + 7 + 12 + 4); // 35
   });
 
   it('handles culture tokens correctly', () => {

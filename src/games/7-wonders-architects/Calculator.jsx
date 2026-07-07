@@ -31,9 +31,7 @@ export default function ArchitectsCalculator() {
         hasCatPawn: false,
         bluePoints: 0,
         blueCatIcons: 0,
-        militaryPoints: 0,
         militaryTokens: 0,
-        progressPoints: 0,
         progressTokens: 0,
         hasDecor: false,
         hasPolitics: false,
@@ -137,13 +135,12 @@ export default function ArchitectsCalculator() {
                     key={wonder.id}
                     onClick={() => !isTaken && selectWonder(playerIdx, wonder.id)}
                     disabled={isTaken}
-                    className={`p-3.5 rounded-2xl text-left transition-all ${
-                      isSelected
-                        ? 'border-2 shadow-lg border-accent-purple'
-                        : isTaken
+                    className={`p-3.5 rounded-2xl text-left transition-all ${isSelected
+                      ? 'border-2 shadow-lg border-accent-purple'
+                      : isTaken
                         ? 'opacity-30 cursor-not-allowed bg-bg-secondary'
                         : 'bg-bg-secondary/50 border border-border-glass hover:border-border-glass-hover'
-                    }`}
+                      }`}
                     id={`wonder-${playerIdx}-${wonder.id}`}
                   >
                     <div className="font-heading font-bold text-sm mb-1.5 text-accent-purple">
@@ -251,7 +248,7 @@ export default function ArchitectsCalculator() {
         {players.map((player, playerIdx) => {
           const pd = scoringData[playerIdx];
           if (!pd) return null;
-          
+
           const wonder = wonders.find(w => w.id === player.wonderId);
           const currentScore = calculateFinalScore(pd);
 
@@ -319,7 +316,7 @@ export default function ArchitectsCalculator() {
                   {t('7wa_tokenEducation')}
                 </label>
                 <label className="flex items-center gap-2 text-xs text-text-secondary">
-                  {t('7wa_tokenCulture')}: 
+                  {t('7wa_tokenCulture')}:
                   <select
                     value={pd.cultureTokens}
                     onChange={(e) => updateScoringField(playerIdx, 'cultureTokens', parseInt(e.target.value))}
@@ -360,7 +357,7 @@ export default function ArchitectsCalculator() {
                   />
                 </div>
 
-                {/* Blue & Military Points */}
+                {/* Blue Points */}
                 <div>
                   <label className="text-text-muted text-[10px] block mb-1">🟦 {t('7wa_bluePoints')} (VP)</label>
                   <input
@@ -373,47 +370,20 @@ export default function ArchitectsCalculator() {
                     id={`blue-pts-${playerIdx}`}
                   />
                 </div>
+
                 <div>
-                  <label className="text-text-muted text-[10px] block mb-1">🟥 {t('7wa_militaryPoints')} (VP)</label>
+                  <label className="text-text-muted text-[10px] block mb-1">🛡️ {t('7wa_militaryTokensCount')}</label>
                   <input
                     type="number"
                     min="0"
-                    value={pd.militaryPoints || ''}
-                    onChange={(e) => updateScoringField(playerIdx, 'militaryPoints', parseInt(e.target.value) || 0)}
+                    value={pd.militaryTokens || ''}
+                    onChange={(e) => updateScoringField(playerIdx, 'militaryTokens', parseInt(e.target.value) || 0)}
                     placeholder="0"
                     className="input text-center text-sm py-1.5"
-                    id={`mil-pts-${playerIdx}`}
+                    id={`mil-count-${playerIdx}`}
                   />
                 </div>
-                
-                {/* Progress Points & Progress Tokens Count (count only needed if Education token) */}
-                <div>
-                  <label className="text-text-muted text-[10px] block mb-1">🟩 {t('7wa_progressPoints')} (VP)</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={pd.progressPoints || ''}
-                    onChange={(e) => updateScoringField(playerIdx, 'progressPoints', parseInt(e.target.value) || 0)}
-                    placeholder="0"
-                    className="input text-center text-sm py-1.5"
-                    id={`prog-pts-${playerIdx}`}
-                  />
-                </div>
-                {pd.hasEducation && (
-                  <div>
-                    <label className="text-text-muted text-[10px] block mb-1">{t('7wa_progressTokensCount')}</label>
-                    <input
-                      type="number"
-                      min="0"
-                      value={pd.progressTokens || ''}
-                      onChange={(e) => updateScoringField(playerIdx, 'progressTokens', parseInt(e.target.value) || 0)}
-                      placeholder="0"
-                      className="input text-center text-sm py-1.5"
-                      id={`prog-count-${playerIdx}`}
-                    />
-                  </div>
-                )}
-                
+
                 {/* Blue Cat Icons (only if Politics token) & Military Tokens */}
                 {pd.hasPolitics && (
                   <div>
@@ -429,18 +399,22 @@ export default function ArchitectsCalculator() {
                     />
                   </div>
                 )}
-                <div>
-                  <label className="text-text-muted text-[10px] block mb-1">🛡️ {t('7wa_militaryTokensCount')}</label>
-                  <input
-                    type="number"
-                    min="0"
-                    value={pd.militaryTokens || ''}
-                    onChange={(e) => updateScoringField(playerIdx, 'militaryTokens', parseInt(e.target.value) || 0)}
-                    placeholder="0"
-                    className="input text-center text-sm py-1.5"
-                    id={`mil-count-${playerIdx}`}
-                  />
-                </div>
+
+                {/* Progress Tokens (only if Education) */}
+                {pd.hasEducation && (
+                  <div>
+                    <label className="text-text-muted text-[10px] block mb-1">{t('7wa_progressTokensCount')}</label>
+                    <input
+                      type="number"
+                      min="0"
+                      value={pd.progressTokens || ''}
+                      onChange={(e) => updateScoringField(playerIdx, 'progressTokens', parseInt(e.target.value) || 0)}
+                      placeholder="0"
+                      className="input text-center text-sm py-1.5"
+                      id={`prog-count-${playerIdx}`}
+                    />
+                  </div>
+                )}
               </div>
             </div>
           );
