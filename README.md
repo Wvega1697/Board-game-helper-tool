@@ -49,9 +49,14 @@ npm run preview
 ```
 
 ## 🎮 Supported Games
-Currently, the app includes calculators for:
-- **Happy Little Dinosaurs:** Track Escape Route points, disasters, point cards, and instant card modifiers.
+Currently, the app includes calculators and helpers for:
 - **Flip 7:** Calculates base scores and tracks busts, stays, and bonus points.
+- **Happy Little Dinosaurs:** Track Escape Route points, disasters, point cards, and instant card modifiers.
+- **Munchkin Adventure Time:** Level tracker, combat calculator, and character ability reference.
+- **Wrong Party:** Guest card scoring engine with influencer, hypnotist, and special card resolution.
+- **7 Wonders Architects:** End-game scoring across all 7 categories with progress tracking.
+- **Everdell:** Full scoring calculator for all point sources (workers, cards, events, journey).
+- **Harmonies:** Animal habitat scoring with terrain type breakdowns and multi-player comparison.
 
 ## 📄 License
 This project is for personal and educational use. Board game names and mechanics belong to their respective creators and publishers.
