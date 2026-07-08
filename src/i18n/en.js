@@ -213,6 +213,33 @@ const en = {
   everdell_tiebreakHint: 'Tiebreakers: most events → most resources',
   everdell_showResults: 'Show Results',
   everdell_events: 'events',
+
+  // Harmonies
+  harmonies_description: 'Place terrain tokens and complete animal patterns in a beautiful landscape puzzle!',
+  harmonies_calculateScores: 'Calculate Scores',
+  harmonies_treePoints: 'Trees 🌲',
+  harmonies_mountainPoints: 'Mountains ⛰️',
+  harmonies_fieldPoints: 'Fields 🌾',
+  harmonies_buildingPoints: 'Buildings 🏠',
+  harmonies_riverPoints: 'Rivers 💧',
+  harmonies_animalPoints: 'Animal Cards 🐾',
+  harmonies_tiebreakTitle: 'Tie — Tiebreakers',
+  harmonies_animalCubesPlaced: 'Cubes placed',
+  harmonies_completedCards: 'Cards done',
+  harmonies_unplacedCubes: 'Cubes left',
+  harmonies_tiebreakHint: 'Most cubes placed → most completed cards → fewest unplaced cubes',
+  harmonies_showResults: 'Show Results',
+  harmonies_cubesPlaced: 'cubes placed',
+  harmonies_addCard: 'Add card',
+  harmonies_noCards: 'Tap + Add card to enter each animal card score.',
+  harmonies_cardLabel: 'Card',
+  harmonies_scoringRef: 'Scoring Reference',
+  harmonies_ref_trees: 'Height 1 = 3 pts · Height 2 = 7 pts · Height 3 = 12 pts. Sum all trees.',
+  harmonies_ref_mountains: 'Height 1 = 1 pt · Height 2 = 3 pts · Height 3 = 7 pts. Must be adjacent to another mountain or 0 pts.',
+  harmonies_ref_fields: 'Each distinct group of 2+ contiguous yellow tokens = 5 pts.',
+  harmonies_ref_buildings: 'Each building surrounded by 3+ different-color top tokens = 5 pts.',
+  harmonies_ref_rivers: 'Longest river: 1→1, 2→2, 3→4, 4→7, 5→11, 6→15, then +4 per token beyond 6.',
+  harmonies_ref_animals: 'Score the VP indicated on the topmost space without an animal cube. A card with all cubes still on it scores 0 points.',
 };
 
 export default en;

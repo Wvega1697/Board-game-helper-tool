@@ -213,6 +213,33 @@ const es = {
   everdell_tiebreakHint: 'Desempate: más eventos → más recursos',
   everdell_showResults: 'Mostrar Resultados',
   everdell_events: 'eventos',
+
+  // Harmonies
+  harmonies_description: '¡Coloca fichas de terreno y completa patrones de animales en un hermoso puzzle de paisajes!',
+  harmonies_calculateScores: 'Calcular Puntuaciones',
+  harmonies_treePoints: 'Árboles 🌲',
+  harmonies_mountainPoints: 'Montañas ⛰️',
+  harmonies_fieldPoints: 'Campos 🌾',
+  harmonies_buildingPoints: 'Edificios 🏠',
+  harmonies_riverPoints: 'Ríos 💧',
+  harmonies_animalPoints: 'Cartas de Animales 🐾',
+  harmonies_tiebreakTitle: 'Empate — Desempate',
+  harmonies_animalCubesPlaced: 'Cubos colocados',
+  harmonies_completedCards: 'Cartas completadas',
+  harmonies_unplacedCubes: 'Cubos restantes',
+  harmonies_tiebreakHint: 'Más cubos colocados → más cartas completadas → menos cubos sin colocar',
+  harmonies_showResults: 'Mostrar Resultados',
+  harmonies_cubesPlaced: 'cubos colocados',
+  harmonies_addCard: 'Agregar carta',
+  harmonies_noCards: 'Toca + Agregar carta para ingresar cada carta de animal.',
+  harmonies_cardLabel: 'Carta',
+  harmonies_scoringRef: 'Referencia de Puntuación',
+  harmonies_ref_trees: 'Altura 1 = 3 pts · Altura 2 = 7 pts · Altura 3 = 12 pts. Suma todos los árboles.',
+  harmonies_ref_mountains: 'Altura 1 = 1 pt · Altura 2 = 3 pts · Altura 3 = 7 pts. Debe estar adyacente a otra montaña o vale 0 pts.',
+  harmonies_ref_fields: 'Cada grupo distinto de 2+ fichas amarillas contiguas = 5 pts.',
+  harmonies_ref_buildings: 'Cada edificio rodeado por 3+ fichas de colores diferentes = 5 pts.',
+  harmonies_ref_rivers: 'Río más largo: 1→1, 2→2, 3→4, 4→7, 5→11, 6→15, luego +4 por ficha más allá de 6.',
+  harmonies_ref_animals: 'Suma los PV indicados en el espacio superior sin cubo de animal. Una carta con todos sus cubos vale 0 puntos.',
 };
 
 export default es;

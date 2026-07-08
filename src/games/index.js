@@ -4,12 +4,21 @@ import munchkinConfig from './munchkin-adventure-time/config.js';
 import wpConfig from './wrong-party/config.js';
 import architectsConfig from './7-wonders-architects/config.js';
 import everdellConfig from './everdell/config.js';
+import harmoniesConfig from './harmonies/config.js';
 
 /**
  * Central game registry.
  * Adding a new game = create a new folder + import its config here.
  */
-export const games = [flip7Config, hldConfig, munchkinConfig, wpConfig, architectsConfig, everdellConfig];
+export const games = [
+  flip7Config,
+  hldConfig,
+  munchkinConfig,
+  wpConfig,
+  architectsConfig,
+  everdellConfig,
+  harmoniesConfig
+].sort(() => Math.random() - 0.5);
 
 export const getGame = (id) => games.find((g) => g.id === id);
 
@@ -25,6 +34,7 @@ export const loadCalculator = (id) => {
     'wrong-party': () => import('./wrong-party/Calculator.jsx'),
     '7-wonders-architects': () => import('./7-wonders-architects/Calculator.jsx'),
     'everdell': () => import('./everdell/Calculator.jsx'),
+    'harmonies': () => import('./harmonies/Calculator.jsx'),
   };
   return loaders[id]?.();
 };
