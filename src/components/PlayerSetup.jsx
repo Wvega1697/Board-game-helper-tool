@@ -88,6 +88,7 @@ export default function PlayerSetup({
     const finalPlayers = players.map((p, i) => ({
       ...p,
       name: p.name.trim() || `${t('playerPlaceholder')} ${i + 1}`,
+      nameWasEmpty: !p.name.trim(),
     }));
     onStart(finalPlayers, enabledRules);
   };
@@ -178,6 +179,10 @@ export default function PlayerSetup({
           </div>
         ))}
       </div>
+
+      <p className="text-text-muted text-xs text-center px-2">
+        {t('namesOptionalHint')}
+      </p>
 
       {/* Add Player Button */}
       {players.length < effectiveMaxPlayers && (

@@ -43,6 +43,8 @@ const en = {
   finishRound: 'Finish Round',
   restartGame: 'Restart Game',
   confirmRestart: 'Restart this game? All progress will be lost.',
+  editScores: 'Edit Scores',
+  namesOptionalHint: 'Names are optional — you can add them after the game ends.',
   houseRules: 'House Rules',
   houseRulesDesc: 'Optional rule variations for this game.',
   hld_swissShears: 'Swiss Shears',

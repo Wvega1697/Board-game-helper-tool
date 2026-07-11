@@ -43,6 +43,8 @@ const es = {
   finishRound: 'Finalizar Ronda',
   restartGame: 'Reiniciar Juego',
   confirmRestart: '¿Reiniciar el juego? Se perderá todo el progreso.',
+  editScores: 'Editar Puntuación',
+  namesOptionalHint: 'Los nombres son opcionales — puedes agregarlos al final de la partida.',
   houseRules: 'Reglas de la Casa',
   houseRulesDesc: 'Variaciones de reglas opcionales para este juego.',
   hld_swissShears: 'Tijeras Suizas',

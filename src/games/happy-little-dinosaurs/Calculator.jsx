@@ -251,6 +251,9 @@ export default function HLDCalculator() {
     setShowShare(false);
   };
 
+  const updatePlayerName = (idx, name) =>
+    setPlayers(players.map((p, i) => (i === idx ? { ...p, name } : p)));
+
   // Filtered instant cards for search
   const filteredCards = useMemo(() => {
     if (!cardSearch.trim()) return instantCards;
@@ -356,11 +359,14 @@ export default function HLDCalculator() {
   if (phase === PHASES.GAME_OVER) {
     const activePlayers = players.filter((p) => !p.eliminated);
     const winner = activePlayers.find((p) => checkWin(p.escapeRoute)) || activePlayers[0];
-    const sortedPlayers = [...players].sort((a, b) => {
-      if (a.eliminated && !b.eliminated) return 1;
-      if (!a.eliminated && b.eliminated) return -1;
-      return b.escapeRoute - a.escapeRoute;
-    });
+    const sortedPlayers = players
+      .map((p, i) => ({ ...p, _origIdx: i }))
+      .sort((a, b) => {
+        if (a.eliminated && !b.eliminated) return 1;
+        if (!a.eliminated && b.eliminated) return -1;
+        return b.escapeRoute - a.escapeRoute;
+      });
+    const winnerIdx = winner ? players.indexOf(winner) : -1;
 
     return (
       <div className="space-y-6 animate-fade-in">
@@ -382,14 +388,25 @@ export default function HLDCalculator() {
             <div
               key={i}
               className={`glass-card p-4 flex items-center gap-3 ${
-                player.name === winner?.name ? 'border-accent-amber/30 animate-glow-pulse' : ''
+                player._origIdx === winnerIdx ? 'border-accent-amber/30 animate-glow-pulse' : ''
               } ${player.eliminated ? 'opacity-50' : ''}`}
             >
               <span className="font-bold text-lg w-8 text-center">
-                {player.name === winner?.name ? '👑' : player.eliminated ? '💀' : `#${i + 1}`}
+                {player._origIdx === winnerIdx ? '👑' : player.eliminated ? '💀' : `#${i + 1}`}
               </span>
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-              <span className="flex-1 font-medium">{player.name}</span>
+              <span className="flex-1 font-medium">
+                {player.nameWasEmpty ? (
+                  <input
+                    type="text"
+                    value={player.name}
+                    onChange={(e) => updatePlayerName(player._origIdx, e.target.value)}
+                    className="input w-full text-sm py-1"
+                    maxLength={20}
+                    id={`edit-name-${player._origIdx}`}
+                  />
+                ) : player.name}
+              </span>
               <div className="text-right">
                 <div className="font-heading font-bold text-xl">{player.escapeRoute}/50</div>
                 <div className="text-text-muted text-xs">
@@ -403,6 +420,9 @@ export default function HLDCalculator() {
         <div className="flex gap-3">
           <button onClick={() => setShowShare(true)} className="btn btn-primary flex-1" id="btn-share-results">
             {t('shareResults')}
+          </button>
+          <button onClick={() => setPhase(PHASES.ROUND_RESULT)} className="btn btn-secondary flex-1" id="btn-edit-scores">
+            {t('editScores')}
           </button>
           <button onClick={newGame} className="btn btn-secondary flex-1" id="btn-new-game">
             {t('playAgain')}

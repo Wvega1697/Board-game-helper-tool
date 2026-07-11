@@ -136,6 +136,19 @@ export default function Flip7Calculator() {
     setShowShare(false);
   };
 
+  // Undo finishRound: strip the last baked round score so players can re-enter
+  const backToPlaying = () => {
+    setPlayers(players.map((p) => ({
+      ...p,
+      totalScore: p.totalScore - (p.roundScores.at(-1) ?? 0),
+      roundScores: p.roundScores.slice(0, -1),
+    })));
+    setPhase(PHASES.PLAYING);
+  };
+
+  const updatePlayerName = (idx, name) =>
+    setPlayers(players.map((p, i) => (i === idx ? { ...p, name } : p)));
+
   const allDone = players.every((_, i) => {
     const pd = roundData[i];
     return pd?.isBust || pd?.isStaying;
@@ -154,7 +167,9 @@ export default function Flip7Calculator() {
   }
 
   if (phase === PHASES.GAME_OVER) {
-    const sortedPlayers = [...players].sort((a, b) => b.totalScore - a.totalScore);
+    const sortedPlayers = players
+      .map((p, i) => ({ ...p, _origIdx: i }))
+      .sort((a, b) => b.totalScore - a.totalScore);
     return (
       <div className="space-y-6 animate-fade-in">
         <div className="text-center">
@@ -171,7 +186,18 @@ export default function Flip7Calculator() {
                 {i === 0 ? '👑' : `#${i + 1}`}
               </span>
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-              <span className="flex-1 font-medium">{player.name}</span>
+              <span className="flex-1 font-medium">
+                {player.nameWasEmpty ? (
+                  <input
+                    type="text"
+                    value={player.name}
+                    onChange={(e) => updatePlayerName(player._origIdx, e.target.value)}
+                    className="input w-full text-sm py-1"
+                    maxLength={20}
+                    id={`edit-name-${player._origIdx}`}
+                  />
+                ) : player.name}
+              </span>
               <span className="font-heading font-bold text-xl">{player.totalScore}</span>
             </div>
           ))}
@@ -180,6 +206,9 @@ export default function Flip7Calculator() {
         <div className="flex gap-3">
           <button onClick={() => setShowShare(true)} className="btn btn-primary flex-1" id="btn-share-results">
             {t('shareResults')}
+          </button>
+          <button onClick={() => setPhase(PHASES.ROUND_RESULT)} className="btn btn-secondary flex-1" id="btn-edit-scores">
+            {t('editScores')}
           </button>
           <button onClick={newGame} className="btn btn-secondary flex-1" id="btn-new-game">
             {t('playAgain')}
@@ -244,6 +273,9 @@ export default function Flip7Calculator() {
           })}
         </div>
 
+        <button onClick={backToPlaying} className="btn btn-secondary w-full" id="btn-edit-scores">
+          {t('editScores')}
+        </button>
         <button onClick={nextRound} className="btn btn-primary w-full" id="btn-next-round">
           {t('nextRound')}
         </button>
