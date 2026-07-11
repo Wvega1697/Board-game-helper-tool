@@ -1,4 +1,4 @@
-﻿const munchkinConfig = {
+const munchkinConfig = {
   id: 'munchkin-adventure-time',
   storagePrefix: 'munchkin',
   name: 'Munchkin Adventure Time',
@@ -9,6 +9,7 @@
   description: 'munchkin_description', // i18n key
   icon: '⚔️',
   targetLevel: 10,
+  playerNoun: { en: 'Adventurer', es: 'Aventurero' },
 };
 
 export default munchkinConfig;

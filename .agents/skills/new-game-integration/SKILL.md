@@ -64,6 +64,7 @@ Pull these out of the rules and note where each one lands:
 | Win condition: race to a target score | `checkWinner(players, target)` style |
 | Win condition: race to a track position / elimination | `checkWin(position)` + `checkElimination(...)` style |
 | Round outcome (who "wins"/"loses" a round, ties) | `determineRoundOutcome(scores)` style |
+| Thematic noun for a player role ("Dino", "Architect", "Adventurer"…) | `config.js` → `playerNoun: { en: '...', es: '...' }` |
 
 ## Step 2 — Common rule-text → repo-pattern map
 
@@ -111,6 +112,8 @@ game's one weird card.
    `score`, `nextRound`, `finishRound`, `gameOver`, `playAgain`,
    `shareResults`, `players`, `playerPlaceholder`, ...)? → Reuse it. Only add
    new keys prefixed `<gameId>_` for genuinely game-specific text.
+   `playerNoun` (the themed label shown instead of "Player N") lives in
+   `config.js`, not i18n — no new i18n key needed for it.
 6. Does this need a new npm dependency (shuffling, RNG, a state-machine lib,
    a UI kit)? → No. `react`, `react-router-dom`, and `html-to-image` are
    already enough for every game shape seen so far. Don't add one.
@@ -124,8 +127,10 @@ handful of new i18n keys, and one registry entry.
 **`src/games/<game-id>/config.js`**
 Same shape as `flip7/config.js` / `happy-little-dinosaurs/config.js`:
 `id`, `name`, `minPlayers`, `maxPlayers`, `estimatedTime`, `tags`,
-`description` (an i18n key, not literal text), `icon`, plus any single
-game-specific constant the win condition needs (`targetScore`,
+`description` (an i18n key, not literal text), `icon`,
+`playerNoun: { en: '...', es: '...' }` (the thematic role label shown instead
+of "Player N" when a name is left blank — e.g. `{ en: 'Dino', es: 'Dino' }`),
+plus any single game-specific constant the win condition needs (`targetScore`,
 `maxEscapeRoute`-equivalent, etc.).
 
 **`src/games/<game-id>/data/<x>.js`** — only if Step 1 found a named table.
@@ -149,7 +154,7 @@ game-specific constant the win condition needs (`targetScore`,
 - Copy the phase-machine shape verbatim:
   `PHASES = { SETUP, [optional pre-round phase], PLAYING, ROUND_RESULT, GAME_OVER }`.
 - `useSessionStorage('<game-id>-phase', ...)` etc., same key convention.
-- `SETUP` → `<PlayerSetup minPlayers={config.minPlayers} maxPlayers={config.maxPlayers} onStart={...} />` unmodified.
+- `SETUP` → `<PlayerSetup minPlayers={config.minPlayers} maxPlayers={config.maxPlayers} onStart={...} playerNoun={config.playerNoun?.[locale]} />`. Always destructure `locale` from `useI18n()` and pass `playerNoun` so placeholder and fallback names are themed.
 - `GAME_OVER` → final standings + `<ShareCard .../>` unmodified, same
   `funStat` string pattern as the two existing calculators.
 - Every interactive element gets an `id="btn-<action>-<idx>"` /

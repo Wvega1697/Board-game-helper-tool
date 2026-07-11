@@ -32,7 +32,7 @@ const EMPTY_PLAYER_DATA = {
 };
 
 export default function EverdellCalculator() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [phase, setPhase] = useSessionStorage('everdell-phase', PHASES.SETUP);
   const [players, setPlayers] = useSessionStorage('everdell-players', []);
   const [scoringData, setScoringData] = useSessionStorage('everdell-scoring-data', {});
@@ -77,7 +77,7 @@ export default function EverdellCalculator() {
 
   // ==================== SETUP ====================
   if (phase === PHASES.SETUP) {
-    return <PlayerSetup minPlayers={config.minPlayers} maxPlayers={config.maxPlayers} onStart={handleStart} />;
+    return <PlayerSetup minPlayers={config.minPlayers} maxPlayers={config.maxPlayers} onStart={handleStart} playerNoun={config.playerNoun?.[locale]} />;
   }
 
   // ==================== GAME OVER ====================
@@ -167,7 +167,7 @@ export default function EverdellCalculator() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: player.color }} />
-                  <span className="font-medium">{player.name || `${t('playerPlaceholder')} ${playerIdx + 1}`}</span>
+                  <span className="font-medium">{player.name || `${config.playerNoun?.[locale] ?? t('playerPlaceholder')} ${playerIdx + 1}`}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-text-muted text-[10px] uppercase tracking-wide">Total:</span>

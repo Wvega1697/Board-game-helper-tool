@@ -44,7 +44,7 @@ const EMPTY_PLAYER_DATA = {
 const sumAnimalCards = (cards) => (cards || []).reduce((s, v) => s + (parseInt(v) || 0), 0);
 
 export default function HarmoniesCalculator() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [phase, setPhase] = useSessionStorage('harmonies-phase', PHASES.SETUP);
   const [players, setPlayers] = useSessionStorage('harmonies-players', []);
   const [scoringData, setScoringData] = useSessionStorage('harmonies-scoring-data', {});
@@ -106,7 +106,7 @@ export default function HarmoniesCalculator() {
 
   // ==================== SETUP ====================
   if (phase === PHASES.SETUP) {
-    return <PlayerSetup minPlayers={config.minPlayers} maxPlayers={config.maxPlayers} onStart={handleStart} />;
+    return <PlayerSetup minPlayers={config.minPlayers} maxPlayers={config.maxPlayers} onStart={handleStart} playerNoun={config.playerNoun?.[locale]} />;
   }
 
   // ==================== GAME OVER ====================
@@ -227,7 +227,7 @@ export default function HarmoniesCalculator() {
               <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                   <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: player.color }} />
-                  <span className="font-medium">{player.name || `${t('playerPlaceholder')} ${playerIdx + 1}`}</span>
+                  <span className="font-medium">{player.name || `${config.playerNoun?.[locale] ?? t('playerPlaceholder')} ${playerIdx + 1}`}</span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-text-muted text-[10px] uppercase tracking-wide">Total:</span>

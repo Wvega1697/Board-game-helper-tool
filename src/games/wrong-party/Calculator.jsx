@@ -154,7 +154,7 @@ function GuestChip({ card, onRemove, onDeclareType }) {
 // ─── Main Calculator ──────────────────────────────────────────────────────────
 
 export default function WrongPartyCalculator() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
 
   const [phase, setPhase] = useSessionStorage('wp-phase', PHASES.SETUP);
   const [players, setPlayers] = useSessionStorage('wp-players', []);
@@ -350,6 +350,7 @@ export default function WrongPartyCalculator() {
         maxPlayers={maxPlayers}
         houseRulesConfig={config.houseRules}
         onStart={handleStartGame}
+        playerNoun={config.playerNoun?.[locale]}
       />
     );
   }

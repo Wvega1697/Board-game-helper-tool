@@ -176,7 +176,7 @@ export default function MunchkinCalculator() {
   }, [battle, players]);
 
   if (phase === PHASES.SETUP) {
-    return <PlayerSetup minPlayers={config.minPlayers} maxPlayers={maxPlayers} onStart={handleStartSetup} />;
+    return <PlayerSetup minPlayers={config.minPlayers} maxPlayers={maxPlayers} onStart={handleStartSetup} playerNoun={config.playerNoun?.[locale]} />;
   }
 
   if (phase === PHASES.CHARACTER_SELECT) {
@@ -190,7 +190,7 @@ export default function MunchkinCalculator() {
             <div key={playerIdx} className="glass-card p-5 space-y-4">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-                <span className="font-medium">{player.name || `${t('playerPlaceholder')} ${playerIdx + 1}`}</span>
+                <span className="font-medium">{player.name || `${config.playerNoun?.[locale] ?? t('playerPlaceholder')} ${playerIdx + 1}`}</span>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 {characters.map((char) => {

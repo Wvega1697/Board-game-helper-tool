@@ -9,6 +9,7 @@ const flip7Config = {
   description: 'flip7_description',  // i18n key
   icon: '🃏',
   targetScore: 200,
+  playerNoun: { en: 'Gambler', es: 'Apostador' },
 };
 
 export default flip7Config;

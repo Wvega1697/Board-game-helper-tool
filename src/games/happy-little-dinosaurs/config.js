@@ -9,6 +9,7 @@ const hldConfig = {
   description: 'hld_description',  // i18n key
   icon: '🦕',
   maxEscapeRoute: 50,
+  playerNoun: { en: 'Dino', es: 'Dino' },
 
   houseRules: [
     {

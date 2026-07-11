@@ -8,6 +8,7 @@ const everdellConfig = {
   tags: ['worker-placement', 'tableau-building'],
   description: 'everdell_description', // i18n key
   icon: '🌳',
+  playerNoun: { en: 'Critter', es: 'Criatura' },
 };
 
 export default everdellConfig;

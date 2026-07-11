@@ -14,7 +14,7 @@ const PHASES = {
 };
 
 export default function Flip7Calculator() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const [phase, setPhase] = useSessionStorage('flip7-phase', PHASES.SETUP);
   const [players, setPlayers] = useSessionStorage('flip7-players', []);
   const [roundNum, setRoundNum] = useSessionStorage('flip7-round', 1);
@@ -162,6 +162,7 @@ export default function Flip7Calculator() {
         minPlayers={config.minPlayers}
         maxPlayers={config.maxPlayers}
         onStart={handleStartGame}
+        playerNoun={config.playerNoun?.[locale]}
       />
     );
   }

@@ -8,6 +8,7 @@ const harmoniesConfig = {
   tags: ['puzzle', 'tile-placement'],
   description: 'harmonies_description', // i18n key
   icon: '🏞️',
+  playerNoun: { en: 'Naturalist', es: 'Naturalista' },
 };
 
 export default harmoniesConfig;

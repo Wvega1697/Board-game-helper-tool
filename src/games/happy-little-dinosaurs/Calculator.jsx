@@ -275,6 +275,7 @@ export default function HLDCalculator() {
         maxPlayers={config.maxPlayers}
         onStart={handleStartSetup}
         houseRulesConfig={config.houseRules}
+        playerNoun={config.playerNoun?.[locale]}
       />
     );
   }
@@ -291,7 +292,7 @@ export default function HLDCalculator() {
           <div key={playerIdx} className="glass-card p-5 space-y-4">
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-              <span className="font-medium">{player.name || `${t('playerPlaceholder')} ${playerIdx + 1}`}</span>
+              <span className="font-medium">{player.name || `${config.playerNoun?.[locale] ?? t('playerPlaceholder')} ${playerIdx + 1}`}</span>
             </div>
 
             <div className="grid grid-cols-2 gap-3">

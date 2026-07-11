@@ -8,6 +8,7 @@ const wpConfig = {
   tags: ['party', 'cards', 'take-that', 'draft'],
   description: 'wp_description', // i18n key
   icon: '🎉',
+  playerNoun: { en: 'Guest', es: 'Invitado' },
 
   houseRules: [
     {

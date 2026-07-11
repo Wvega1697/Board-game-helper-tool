@@ -8,6 +8,7 @@ const architectsConfig = {
   tags: ['drafting', 'city-building'],
   description: '7wa_description',
   icon: '🏛️',
+  playerNoun: { en: 'Architect', es: 'Arquitecto' },
 };
 
 export default architectsConfig;

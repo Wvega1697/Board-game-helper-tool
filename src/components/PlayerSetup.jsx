@@ -29,6 +29,7 @@ export default function PlayerSetup({
   onStart,
   renderPlayerExtra,
   houseRulesConfig,
+  playerNoun,
 }) {
   const { t, locale } = useI18n();
   const [players, setPlayers] = useState(
@@ -84,10 +85,12 @@ export default function PlayerSetup({
     });
   };
 
+  const noun = playerNoun || t('playerPlaceholder');
+
   const handleStart = () => {
     const finalPlayers = players.map((p, i) => ({
       ...p,
-      name: p.name.trim() || `${t('playerPlaceholder')} ${i + 1}`,
+      name: p.name.trim() || `${noun} ${i + 1}`,
       nameWasEmpty: !p.name.trim(),
     }));
     onStart(finalPlayers, enabledRules);
@@ -149,7 +152,7 @@ export default function PlayerSetup({
                 type="text"
                 value={player.name}
                 onChange={(e) => updateName(index, e.target.value)}
-                placeholder={`${t('playerPlaceholder')} ${index + 1}`}
+                placeholder={`${noun} ${index + 1}`}
                 className="input flex-1"
                 maxLength={20}
                 id={`player-name-${index}`}
