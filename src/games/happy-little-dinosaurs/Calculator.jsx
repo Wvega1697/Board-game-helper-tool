@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useI18n } from '../../i18n/index.jsx';
 import { useSessionStorage } from '../../hooks/useSessionStorage.js';
 import PlayerSetup from '../../components/PlayerSetup.jsx';
-import ShareCard from '../../components/ShareCard.jsx';
+import GameOverScreen from '../../components/GameOverScreen.jsx';
 import { dinosaurs, getDinosaurName, getTraitDesc } from './data/dinosaurs.js';
 import { instantCards, getCardName, getCardEffect } from './data/instantCards.js';
 import { hazardCards, getHazardName, getHazardEffect } from './data/hazardCards.js';
@@ -49,7 +49,6 @@ export default function HLDCalculator() {
   // House rules: Set of enabled rule IDs, stored as array in sessionStorage
   const [enabledRulesArr, setEnabledRulesArr] = useSessionStorage('hld-house-rules', []);
   const enabledRules = new Set(enabledRulesArr);
-  const [showShare, setShowShare] = useState(false);
   const [cardSearch, setCardSearch] = useState('');
 
   // Available (unselected) dinosaurs
@@ -248,7 +247,6 @@ export default function HLDCalculator() {
     setRoundData({});
     setDinoSelections({});
     setEnabledRulesArr([]);
-    setShowShare(false);
   };
 
   const updatePlayerName = (idx, name) =>
@@ -367,84 +365,16 @@ export default function HLDCalculator() {
         if (!a.eliminated && b.eliminated) return -1;
         return b.escapeRoute - a.escapeRoute;
       });
-    const winnerIdx = winner ? players.indexOf(winner) : -1;
-
+    const winnerName = winner?.name;
+    const funStat = `${roundNum} ${t('round').toLowerCase()}${roundNum !== 1 ? 's' : ''} | ${players.filter((p) => p.eliminated).length} ${t('hld_eliminated').toLowerCase()}`;
     return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="text-center">
-          <div className="text-6xl mb-3 animate-scale-in">🏆</div>
-          <h2 className="font-heading text-2xl font-bold gradient-text">{t('gameOver')}</h2>
-          {winner && (
-            <p className="text-accent-amber text-lg font-bold mt-2">
-              {t('hld_wins', { player: winner.name })}
-            </p>
-          )}
-          <p className="text-text-secondary text-sm mt-1">
-            {checkWin(winner?.escapeRoute) ? t('hld_reached50') : t('hld_lastStanding')}
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          {sortedPlayers.map((player, i) => (
-            <div
-              key={i}
-              className={`glass-card p-4 flex items-center gap-3 ${
-                player._origIdx === winnerIdx ? 'border-accent-amber/30 animate-glow-pulse' : ''
-              } ${player.eliminated ? 'opacity-50' : ''}`}
-            >
-              <span className="font-bold text-lg w-8 text-center">
-                {player._origIdx === winnerIdx ? '👑' : player.eliminated ? '💀' : `#${i + 1}`}
-              </span>
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-              <span className="flex-1 font-medium">
-                {player.nameWasEmpty ? (
-                  <input
-                    type="text"
-                    value={player.name}
-                    onChange={(e) => updatePlayerName(player._origIdx, e.target.value)}
-                    className="input w-full text-sm py-1"
-                    maxLength={20}
-                    id={`edit-name-${player._origIdx}`}
-                  />
-                ) : player.name}
-              </span>
-              <div className="text-right">
-                <div className="font-heading font-bold text-xl">{player.escapeRoute}/50</div>
-                <div className="text-text-muted text-xs">
-                  {player.disasterArea?.length || 0} 💀
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex gap-3">
-          <button onClick={() => setShowShare(true)} className="btn btn-primary flex-1" id="btn-share-results">
-            {t('shareResults')}
-          </button>
-          <button onClick={() => setPhase(PHASES.ROUND_RESULT)} className="btn btn-secondary flex-1" id="btn-edit-scores">
-            {t('editScores')}
-          </button>
-          <button onClick={newGame} className="btn btn-secondary flex-1" id="btn-new-game">
-            {t('playAgain')}
-          </button>
-        </div>
-
-        {showShare && (
-          <ShareCard
-            gameName={config.name}
-            gameIcon={config.icon}
-            players={sortedPlayers.map((p, i) => ({
-              name: p.name,
-              score: p.escapeRoute,
-              color: p.color,
-              isWinner: p.name === winner?.name,
-            }))}
-            funStat={`${roundNum} ${t('round').toLowerCase()}${roundNum !== 1 ? 's' : ''} | ${players.filter((p) => p.eliminated).length} ${t('hld_eliminated').toLowerCase()}`}
-            onClose={() => setShowShare(false)}
-          />
-        )}
-      </div>
+      <GameOverScreen
+        config={config}
+        players={sortedPlayers.map((p) => ({ name: p.name, score: p.escapeRoute, color: p.color, isWinner: p.name === winnerName }))}
+        funStat={funStat}
+        onEditScores={() => setPhase(PHASES.ROUND_RESULT)}
+        onNewGame={newGame}
+      />
     );
   }
 
@@ -537,7 +467,7 @@ export default function HLDCalculator() {
             className={`glass-card px-4 py-3 flex-shrink-0 text-center min-w-[76px] ${player.eliminated ? 'opacity-30' : ''}`}
           >
             <div className="w-2 h-2 rounded-full mx-auto mb-1.5" style={{ backgroundColor: player.color }} />
-            <div className="text-[10px] text-text-secondary truncate max-w-[60px]">{player.name}</div>
+            <div className="text-[10px] text-text-secondary truncate max-w-[90px]">{player.name}</div>
             <div className="font-heading font-bold text-sm mt-0.5">{player.escapeRoute}/50</div>
             {player.disasterArea?.length > 0 && (
               <div className="text-[9px] text-text-muted mt-0.5">{player.disasterArea.length}💀</div>

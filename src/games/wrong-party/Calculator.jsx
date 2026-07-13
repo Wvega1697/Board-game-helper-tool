@@ -2,7 +2,7 @@ import { useState, useMemo, useCallback } from 'react';
 import { useI18n } from '../../i18n/index.jsx';
 import { useSessionStorage } from '../../hooks/useSessionStorage.js';
 import PlayerSetup from '../../components/PlayerSetup.jsx';
-import ShareCard from '../../components/ShareCard.jsx';
+import GameOverScreen from '../../components/GameOverScreen.jsx';
 import { guests as allGuests, themes as allThemes } from './data/cards.js';
 import {
   ATTRIBUTES,
@@ -169,7 +169,6 @@ export default function WrongPartyCalculator() {
   // Round scores stored per player
   const [roundScores, setRoundScores] = useSessionStorage('wp-round-scores', {});
 
-  const [showShare, setShowShare] = useState(false);
   const [expandedBreakdowns, setExpandedBreakdowns] = useState({});
 
   const toggleBreakdown = useCallback((idx) => {
@@ -306,7 +305,6 @@ export default function WrongPartyCalculator() {
     setAreas({});
     setRoundScores({});
     setActiveThemeId('');
-    setShowShare(false);
   };
 
   // Undo finishRound: strip the last baked round score so players can re-enter
@@ -360,72 +358,15 @@ export default function WrongPartyCalculator() {
       .map((p, i) => ({ ...p, _origIdx: i }))
       .sort((a, b) => b.totalScore - a.totalScore);
     const maxScore = Math.max(...players.map((p) => p.totalScore));
+    const funStat = `${roundNum} ${t('round').toLowerCase()}${roundNum !== 1 ? 's' : ''} played`;
     return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="text-center">
-          <div className="text-6xl mb-3 animate-scale-in">🎉</div>
-          <h2 className="font-heading text-2xl font-bold gradient-text">{t('gameOver')}</h2>
-          <p className="text-accent-amber text-lg font-bold mt-2">
-            {sorted[0]?.name} {t('winner')}
-          </p>
-        </div>
-
-        <div className="space-y-2">
-          {sorted.map((player, i) => (
-            <div
-              key={i}
-              className={`glass-card p-4 flex items-center gap-3 ${
-                player.totalScore === maxScore ? 'border-accent-amber/30 animate-glow-pulse' : ''
-              }`}
-            >
-              <span className="font-bold text-lg w-8 text-center">
-                {player.totalScore === maxScore ? '👑' : `#${i + 1}`}
-              </span>
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-              <span className="flex-1 font-medium">
-                {player.nameWasEmpty ? (
-                  <input
-                    type="text"
-                    value={player.name}
-                    onChange={(e) => updatePlayerName(player._origIdx, e.target.value)}
-                    className="input w-full text-sm py-1"
-                    maxLength={20}
-                    id={`edit-name-${player._origIdx}`}
-                  />
-                ) : player.name}
-              </span>
-              <span className="font-heading font-bold text-xl">{player.totalScore}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex gap-3">
-          <button onClick={() => setShowShare(true)} className="btn btn-primary flex-1" id="btn-share-results">
-            {t('shareResults')}
-          </button>
-          <button onClick={() => setPhase(PHASES.ROUND_RESULT)} className="btn btn-secondary flex-1" id="btn-edit-scores">
-            {t('editScores')}
-          </button>
-          <button onClick={newGame} className="btn btn-secondary flex-1" id="btn-new-game">
-            {t('playAgain')}
-          </button>
-        </div>
-
-        {showShare && (
-          <ShareCard
-            gameName={config.name}
-            gameIcon={config.icon}
-            players={sorted.map((p) => ({
-              name: p.name,
-              score: p.totalScore,
-              color: p.color,
-              isWinner: p.totalScore === maxScore,
-            }))}
-            funStat={`${roundNum} ${t('round').toLowerCase()}${roundNum !== 1 ? 's' : ''} played`}
-            onClose={() => setShowShare(false)}
-          />
-        )}
-      </div>
+      <GameOverScreen
+        config={config}
+        players={sorted.map((p) => ({ name: p.name, score: p.totalScore, color: p.color, isWinner: p.totalScore === maxScore }))}
+        funStat={funStat}
+        onEditScores={() => setPhase(PHASES.ROUND_RESULT)}
+        onNewGame={newGame}
+      />
     );
   }
 
@@ -500,7 +441,7 @@ export default function WrongPartyCalculator() {
         {players.map((player, i) => (
           <div key={i} className="glass-card px-4 py-3 flex-shrink-0 text-center min-w-[76px]">
             <div className="w-2 h-2 rounded-full mx-auto mb-1.5" style={{ backgroundColor: player.color }} />
-            <div className="text-xs text-text-secondary truncate max-w-[60px]">{player.name}</div>
+            <div className="text-xs text-text-secondary truncate max-w-[90px]">{player.name}</div>
             <div className="font-heading font-bold text-sm mt-0.5">{player.totalScore}</div>
           </div>
         ))}

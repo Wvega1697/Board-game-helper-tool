@@ -1,6 +1,7 @@
 const munchkinConfig = {
   id: 'munchkin-adventure-time',
   storagePrefix: 'munchkin',
+  bggId: 146735,
   name: 'Munchkin Adventure Time',
   minPlayers: 3,
   maxPlayers: 6, // ponytail: Calculator caps at characters.length dynamically

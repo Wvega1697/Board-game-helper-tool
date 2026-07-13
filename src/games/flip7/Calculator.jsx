@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useI18n } from '../../i18n/index.jsx';
 import { useSessionStorage } from '../../hooks/useSessionStorage.js';
 import PlayerSetup from '../../components/PlayerSetup.jsx';
-import ShareCard from '../../components/ShareCard.jsx';
+import GameOverScreen from '../../components/GameOverScreen.jsx';
 import { calculateRoundScore, checkBust, checkWinner } from './rules.js';
 import config from './config.js';
 
@@ -19,7 +19,6 @@ export default function Flip7Calculator() {
   const [players, setPlayers] = useSessionStorage('flip7-players', []);
   const [roundNum, setRoundNum] = useSessionStorage('flip7-round', 1);
   const [roundData, setRoundData] = useSessionStorage('flip7-round-data', {});
-  const [showShare, setShowShare] = useState(false);
 
   // Initialize round data for all players
   const initRoundData = useCallback((playerList) => {
@@ -98,6 +97,12 @@ export default function Flip7Calculator() {
     setRoundData({ ...roundData, [playerIdx]: pd });
   };
 
+  const unstayPlayer = (playerIdx) => {
+    const pd = { ...roundData[playerIdx] };
+    pd.isStaying = false;
+    setRoundData({ ...roundData, [playerIdx]: pd });
+  };
+
   const finishRound = () => {
     const updatedPlayers = players.map((player, i) => {
       const pd = roundData[i];
@@ -133,16 +138,21 @@ export default function Flip7Calculator() {
     setPlayers([]);
     setRoundNum(1);
     setRoundData({});
-    setShowShare(false);
   };
 
-  // Undo finishRound: strip the last baked round score so players can re-enter
+  // Undo finishRound: strip the last baked round score and reset stay state so players can re-enter
   const backToPlaying = () => {
     setPlayers(players.map((p) => ({
       ...p,
       totalScore: p.totalScore - (p.roundScores.at(-1) ?? 0),
       roundScores: p.roundScores.slice(0, -1),
     })));
+    // Reset isStaying for all players so they can interact again
+    const reset = {};
+    Object.entries(roundData).forEach(([k, pd]) => {
+      reset[k] = { ...pd, isStaying: false };
+    });
+    setRoundData(reset);
     setPhase(PHASES.PLAYING);
   };
 
@@ -171,66 +181,15 @@ export default function Flip7Calculator() {
     const sortedPlayers = players
       .map((p, i) => ({ ...p, _origIdx: i }))
       .sort((a, b) => b.totalScore - a.totalScore);
+    const funStat = `${roundNum} ${t('round').toLowerCase()}${roundNum !== 1 ? 's' : ''} | ${t('flip7_targetScore', { target: config.targetScore })}`;
     return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="text-center">
-          <div className="text-6xl mb-3 animate-scale-in">🏆</div>
-          <h2 className="font-heading text-2xl font-bold gradient-text">{t('gameOver')}</h2>
-          <p className="text-accent-amber text-lg font-bold mt-2">{sortedPlayers[0]?.name} {t('winner')}</p>
-        </div>
-
-        {/* Final Standings */}
-        <div className="space-y-2">
-          {sortedPlayers.map((player, i) => (
-            <div key={i} className={`glass-card p-4 flex items-center gap-3 ${i === 0 ? 'border-accent-amber/30 animate-glow-pulse' : ''}`}>
-              <span className="font-bold text-lg w-8 text-center">
-                {i === 0 ? '👑' : `#${i + 1}`}
-              </span>
-              <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-              <span className="flex-1 font-medium">
-                {player.nameWasEmpty ? (
-                  <input
-                    type="text"
-                    value={player.name}
-                    onChange={(e) => updatePlayerName(player._origIdx, e.target.value)}
-                    className="input w-full text-sm py-1"
-                    maxLength={20}
-                    id={`edit-name-${player._origIdx}`}
-                  />
-                ) : player.name}
-              </span>
-              <span className="font-heading font-bold text-xl">{player.totalScore}</span>
-            </div>
-          ))}
-        </div>
-
-        <div className="flex gap-3">
-          <button onClick={() => setShowShare(true)} className="btn btn-primary flex-1" id="btn-share-results">
-            {t('shareResults')}
-          </button>
-          <button onClick={() => setPhase(PHASES.ROUND_RESULT)} className="btn btn-secondary flex-1" id="btn-edit-scores">
-            {t('editScores')}
-          </button>
-          <button onClick={newGame} className="btn btn-secondary flex-1" id="btn-new-game">
-            {t('playAgain')}
-          </button>
-        </div>
-
-        {showShare && (
-          <ShareCard
-            gameName={config.name}
-            gameIcon={config.icon}
-            players={sortedPlayers.map((p, i) => ({
-              name: p.name,
-              score: p.totalScore,
-              color: p.color,
-              isWinner: i === 0,
-            }))}
-            funStat={`${roundNum} ${t('round').toLowerCase()}${roundNum !== 1 ? 's' : ''} | ${t('flip7_targetScore', { target: config.targetScore })}`}
-            onClose={() => setShowShare(false)}
-          />
-        )}
-      </div>
+      <GameOverScreen
+        config={config}
+        players={sortedPlayers.map((p, i) => ({ name: p.name, score: p.totalScore, color: p.color, isWinner: i === 0 }))}
+        funStat={funStat}
+        onEditScores={() => setPhase(PHASES.ROUND_RESULT)}
+        onNewGame={newGame}
+      />
     );
   }
 
@@ -305,7 +264,7 @@ export default function Flip7Calculator() {
             className="glass-card px-4 py-3 flex-shrink-0 text-center min-w-[76px]"
           >
             <div className="w-2 h-2 rounded-full mx-auto mb-1.5" style={{ backgroundColor: player.color }} />
-            <div className="text-xs text-text-secondary truncate max-w-[60px]">{player.name}</div>
+            <div className="text-xs text-text-secondary truncate max-w-[90px]">{player.name}</div>
             <div className="font-heading font-bold text-sm mt-0.5">{player.totalScore}</div>
           </div>
         ))}
@@ -367,8 +326,8 @@ export default function Flip7Calculator() {
                   {/* Number buttons */}
                   <div>
                     <div className="text-text-muted text-xs mb-1.5">{t('flip7_numberCards')}</div>
-                    <div className="grid grid-cols-5 gap-2">
-                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9].map((num) => (
+                    <div className="grid grid-cols-3 gap-2">
+                      {[0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11].map((num) => (
                         <button
                           key={num}
                           onClick={() => addNumberCard(playerIdx, num)}
@@ -378,46 +337,47 @@ export default function Flip7Calculator() {
                           {num}
                         </button>
                       ))}
+                      {/* 12 + x2 + modifier+undo all share the last row */}
+                      <button
+                        onClick={() => addNumberCard(playerIdx, 12)}
+                        className="btn-icon text-sm font-heading font-bold hover:bg-accent-purple/20 hover:text-accent-purple"
+                        id={`btn-card-${playerIdx}-12`}
+                      >
+                        12
+                      </button>
+                      <button
+                        onClick={() => toggleMultiplier(playerIdx)}
+                        className={`btn-icon text-xs font-bold ${
+                          pd.multiplierCount > 0
+                            ? 'bg-accent-amber/20 text-accent-amber border border-accent-amber/30'
+                            : ''
+                        }`}
+                        id={`btn-multiplier-${playerIdx}`}
+                      >
+                        x2{pd.multiplierCount > 0 ? ` ×${pd.multiplierCount}` : ''}
+                      </button>
+                      <div className="flex items-center gap-1">
+                        <input
+                          type="number"
+                          value={pd.modifierTotal || ''}
+                          onChange={(e) => updateModifier(playerIdx, e.target.value)}
+                          placeholder="+0"
+                          className="input text-center text-sm py-1.5 min-w-0 flex-1"
+                          id={`input-modifier-${playerIdx}`}
+                        />
+                        <button
+                          onClick={() => removeLastCard(playerIdx)}
+                          className="btn-icon text-text-muted hover:text-danger shrink-0"
+                          aria-label="Undo"
+                          id={`btn-undo-${playerIdx}`}
+                        >
+                          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M3 7v6h6" />
+                            <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
+                          </svg>
+                        </button>
+                      </div>
                     </div>
-                  </div>
-
-                  {/* Modifiers row */}
-                  <div className="flex items-center gap-3">
-                    <button
-                      onClick={() => toggleMultiplier(playerIdx)}
-                      className={`btn text-xs flex-1 ${
-                        pd.multiplierCount > 0
-                          ? 'bg-accent-amber/20 text-accent-amber border border-accent-amber/30'
-                          : 'btn-secondary'
-                      }`}
-                      id={`btn-multiplier-${playerIdx}`}
-                    >
-                      x2 {pd.multiplierCount > 0 ? `(×${pd.multiplierCount})` : ''}
-                    </button>
-
-                    <div className="flex items-center gap-1.5 flex-1">
-                      <span className="text-text-muted text-xs">+</span>
-                      <input
-                        type="number"
-                        value={pd.modifierTotal || ''}
-                        onChange={(e) => updateModifier(playerIdx, e.target.value)}
-                        placeholder="0"
-                        className="input text-center text-sm py-1.5"
-                        id={`input-modifier-${playerIdx}`}
-                      />
-                    </div>
-
-                    <button
-                      onClick={() => removeLastCard(playerIdx)}
-                      className="btn-icon text-text-muted hover:text-danger"
-                      aria-label="Undo"
-                      id={`btn-undo-${playerIdx}`}
-                    >
-                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-                        <path d="M3 7v6h6" />
-                        <path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13" />
-                      </svg>
-                    </button>
                   </div>
 
                   {/* Stay button */}
@@ -429,6 +389,17 @@ export default function Flip7Calculator() {
                     {t('flip7_stay')}
                   </button>
                 </div>
+              )}
+
+              {/* Unstay button — only for manually-stayed players (not auto-stay / bust) */}
+              {pd.isStaying && !pd.isBust && (
+                <button
+                  onClick={() => unstayPlayer(playerIdx)}
+                  className="btn btn-secondary w-full text-text-muted text-sm"
+                  id={`btn-unstay-${playerIdx}`}
+                >
+                  ↩ {t('flip7_unstay')}
+                </button>
               )}
             </div>
           );

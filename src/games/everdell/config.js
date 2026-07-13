@@ -1,6 +1,7 @@
 const everdellConfig = {
   id: 'everdell',
   storagePrefix: 'everdell',
+  bggId: 199792,
   name: 'Everdell',
   minPlayers: 2,
   maxPlayers: 4,

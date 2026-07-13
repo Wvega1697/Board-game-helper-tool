@@ -25,3 +25,6 @@ dist-ssr
 resources
 .vercel
 .env*
+
+# Cloudflare Workers
+bgg-worker/

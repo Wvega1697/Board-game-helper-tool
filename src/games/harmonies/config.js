@@ -1,6 +1,7 @@
 const harmoniesConfig = {
   id: 'harmonies',
   storagePrefix: 'harmonies',
+  bggId: 414317,
   name: 'Harmonies',
   minPlayers: 1,
   maxPlayers: 4,

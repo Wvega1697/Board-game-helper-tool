@@ -30,6 +30,8 @@ export default function PlayerSetup({
   renderPlayerExtra,
   houseRulesConfig,
   playerNoun,
+  submitLabel,
+  onNameChange,
 }) {
   const { t, locale } = useI18n();
   const [players, setPlayers] = useState(
@@ -68,6 +70,7 @@ export default function PlayerSetup({
 
   const updateName = (index, name) => {
     setPlayers(players.map((p, i) => (i === index ? { ...p, name } : p)));
+    onNameChange?.(index, name);
   };
 
   const toggleRule = (id) => {
@@ -141,11 +144,13 @@ export default function PlayerSetup({
         {players.map((player, index) => (
           <div key={index} className="glass-card p-4 animate-scale-in" style={{ animationDelay: `${index * 50}ms` }}>
             <div className="flex items-center gap-3">
-              {/* Color indicator */}
-              <div
-                className="w-4 h-4 rounded-full flex-shrink-0 shadow-lg"
-                style={{ backgroundColor: player.color, boxShadow: `0 0 10px ${player.color}40` }}
-              />
+              {/* Color indicator — hidden when renderPlayerExtra provides its own color UI */}
+              {!renderPlayerExtra && (
+                <div
+                  className="w-4 h-4 rounded-full flex-shrink-0 shadow-lg"
+                  style={{ backgroundColor: player.color, boxShadow: `0 0 10px ${player.color}40` }}
+                />
+              )}
 
               {/* Name input */}
               <input
@@ -208,7 +213,7 @@ export default function PlayerSetup({
         className="btn btn-primary w-full text-base mt-4 disabled:opacity-50 disabled:cursor-not-allowed"
         id="btn-start-game"
       >
-        {t('startGame')}
+        {submitLabel || t('startGame')}
       </button>
     </div>
   );
