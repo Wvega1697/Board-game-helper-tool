@@ -5,7 +5,7 @@
 
 /**
  * Check if a set of number cards contains a duplicate (bust).
- * @param {number[]} numberCards - Array of card values (0–9)
+ * @param {number[]} numberCards - Array of card values (0–12)
  * @returns {boolean}
  */
 export function checkBust(numberCards) {

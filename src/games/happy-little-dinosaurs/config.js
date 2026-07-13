@@ -1,6 +1,7 @@
 const hldConfig = {
   id: 'happy-little-dinosaurs',
   storagePrefix: 'hld',
+  bggId: 325414,
   name: 'Happy Little Dinosaurs',
   minPlayers: 2,
   maxPlayers: 6,

@@ -1,6 +1,7 @@
 const wpConfig = {
   id: 'wrong-party',
   storagePrefix: 'wp',
+  bggId: 336622,
   name: 'Wrong Party',
   minPlayers: 2,
   maxPlayers: 5,

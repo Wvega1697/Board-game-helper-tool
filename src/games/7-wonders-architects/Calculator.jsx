@@ -1,8 +1,8 @@
-import { useState, useCallback } from 'react';
+import { useCallback } from 'react';
 import { useI18n } from '../../i18n/index.jsx';
 import { useSessionStorage } from '../../hooks/useSessionStorage.js';
 import PlayerSetup from '../../components/PlayerSetup.jsx';
-import ShareCard from '../../components/ShareCard.jsx';
+import GameOverScreen from '../../components/GameOverScreen.jsx';
 import { calculateFinalScore, checkWinner } from './rules.js';
 import config from './config.js';
 import { wonders, getWonderName, getWonderEffect } from './data/wonders.js';
@@ -55,7 +55,6 @@ export default function ArchitectsCalculator() {
   const [tokenSelections, setTokenSelections] = useSessionStorage('7wa-token-selections', {});
   // Only numeric inputs; boolean fields are derived live from tokenSelections
   const [scoringData, setScoringData] = useSessionStorage('7wa-scoring-data', {});
-  const [showShare, setShowShare] = useState(false);
 
   const initScoringData = useCallback((playerList) => {
     const data = {};
@@ -125,7 +124,6 @@ export default function ArchitectsCalculator() {
     setWonderSelections({});
     setTokenSelections({});
     setScoringData({});
-    setShowShare(false);
   };
 
   const updatePlayerName = (idx, name) =>
@@ -193,64 +191,21 @@ export default function ArchitectsCalculator() {
     const sortedPlayers = players
       .map((p, i) => ({ ...p, _origIdx: i }))
       .sort((a, b) => {
-      const aW = winners.includes(a.name), bW = winners.includes(b.name);
-      if (aW && !bW) return -1;
-      if (!aW && bW) return 1;
-      if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
-      return b.stagesConstructed - a.stagesConstructed;
-    });
+        const aW = winners.includes(a.name), bW = winners.includes(b.name);
+        if (aW && !bW) return -1;
+        if (!aW && bW) return 1;
+        if (b.totalScore !== a.totalScore) return b.totalScore - a.totalScore;
+        return b.stagesConstructed - a.stagesConstructed;
+      });
+    const maxStages = Math.max(...sortedPlayers.map((p) => p.stagesConstructed));
     return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="text-center">
-          <div className="text-6xl mb-3 animate-scale-in">🏆</div>
-          <h2 className="font-heading text-2xl font-bold gradient-text">{t('gameOver')}</h2>
-          <p className="text-accent-amber text-lg font-bold mt-2">{winners.join(' & ')} {t('winner')}</p>
-        </div>
-
-        <div className="space-y-2">
-          {sortedPlayers.map((player, i) => {
-            const isWinner = winners.includes(player.name);
-            return (
-              <div key={i} className={`glass-card p-4 flex items-center gap-3 ${isWinner ? 'border-accent-amber/30 animate-glow-pulse' : ''}`}>
-                <span className="font-bold text-lg w-8 text-center">{isWinner ? '👑' : `#${i + 1}`}</span>
-                <div className="w-3 h-3 rounded-full" style={{ backgroundColor: player.color }} />
-                <span className="flex-1 font-medium">
-                {player.nameWasEmpty ? (
-                  <input
-                    type="text"
-                    value={player.name}
-                    onChange={(e) => updatePlayerName(player._origIdx, e.target.value)}
-                    className="input w-full text-sm py-1"
-                    maxLength={20}
-                    id={`edit-name-${player._origIdx}`}
-                  />
-                ) : player.name}
-              </span>
-                <div className="text-right">
-                  <div className="font-heading font-bold text-xl">{player.totalScore}</div>
-                  <div className="text-text-muted text-xs">{player.stagesConstructed} {t('7wa_stages')}</div>
-                </div>
-              </div>
-            );
-          })}
-        </div>
-
-        <div className="flex gap-3">
-          <button onClick={() => setShowShare(true)} className="btn btn-primary flex-1" id="btn-share-results">{t('shareResults')}</button>
-          <button onClick={() => setPhase(PHASES.SCORING)} className="btn btn-secondary flex-1" id="btn-edit-scores">{t('editScores')}</button>
-          <button onClick={newGame} className="btn btn-secondary flex-1" id="btn-new-game">{t('playAgain')}</button>
-        </div>
-
-        {showShare && (
-          <ShareCard
-            gameName={config.name}
-            gameIcon={config.icon}
-            players={sortedPlayers.map((p) => ({ name: p.name, score: p.totalScore, color: p.color, isWinner: winners.includes(p.name) }))}
-            funStat={`${winners.join(' & ')} | ${Math.max(...sortedPlayers.map(p => p.stagesConstructed))} ${t('7wa_stages').toLowerCase()}`}
-            onClose={() => setShowShare(false)}
-          />
-        )}
-      </div>
+      <GameOverScreen
+        config={config}
+        players={sortedPlayers.map((p) => ({ name: p.name, score: p.totalScore, color: p.color, isWinner: winners.includes(p.name) }))}
+        funStat={`${winners.join(' & ')} | ${maxStages} ${t('7wa_stages').toLowerCase()}`}
+        onEditScores={() => setPhase(PHASES.SCORING)}
+        onNewGame={newGame}
+      />
     );
   }
 

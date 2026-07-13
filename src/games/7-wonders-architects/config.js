@@ -1,6 +1,7 @@
 const architectsConfig = {
   id: '7-wonders-architects',
   storagePrefix: '7wa',
+  bggId: 346703,
   name: '7 Wonders Architects',
   minPlayers: 2,
   maxPlayers: 7,

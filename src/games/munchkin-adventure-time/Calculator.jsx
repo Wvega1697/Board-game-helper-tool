@@ -2,7 +2,7 @@ import { useState, useMemo } from 'react';
 import { useI18n } from '../../i18n/index.jsx';
 import { useSessionStorage } from '../../hooks/useSessionStorage.js';
 import PlayerSetup from '../../components/PlayerSetup.jsx';
-import ShareCard from '../../components/ShareCard.jsx';
+import GameOverScreen from '../../components/GameOverScreen.jsx';
 import { characters, getCharacterName, getCharacterPower } from './data/characters.js';
 import { applyLevelDelta, checkWinner, calculateCombat } from './rules.js';
 import config from './config.js';
@@ -42,7 +42,6 @@ export default function MunchkinCalculator() {
   const [phase, setPhase] = useSessionStorage('munchkin-phase', PHASES.SETUP);
   const [players, setPlayers] = useSessionStorage('munchkin-players', []);
   const [charSelections, setCharSelections] = useSessionStorage('munchkin-char-selections', {});
-  const [showShare, setShowShare] = useState(false);
   const [battle, setBattle] = useState(null);
   const [openSetLevel, setOpenSetLevel] = useState(null);
   const [setLevelInputs, setSetLevelInputs] = useState({});
@@ -155,7 +154,7 @@ export default function MunchkinCalculator() {
     setBattle(null);
   };
 
-  const newGame = () => { setPhase(PHASES.SETUP); setPlayers([]); setCharSelections({}); setBattle(null); setShowShare(false); setOpenSetLevel(null); };
+  const newGame = () => { setPhase(PHASES.SETUP); setPlayers([]); setCharSelections({}); setBattle(null); setOpenSetLevel(null); };
 
   const updatePlayerName = (idx, name) =>
     setPlayers(players.map((p, i) => (i === idx ? { ...p, name } : p)));
@@ -239,52 +238,13 @@ export default function MunchkinCalculator() {
     const winner = sortedPlayers[0];
     const winnerCharName = getCharacterName(characters.find((c) => c.id === winner?.characterId), winner?.gender, locale) || winner?.name;
     return (
-      <div className="space-y-6 animate-fade-in">
-        <div className="text-center">
-          <div className="text-6xl mb-3 animate-scale-in">🏆</div>
-          <h2 className="font-heading text-2xl font-bold gradient-text">{t('gameOver')}</h2>
-          {winner && <p className="text-accent-amber text-lg font-bold mt-2">{t('munchkin_wins', { player: winnerCharName })}</p>}
-        </div>
-        <div className="space-y-2">
-          {sortedPlayers.map((player, i) => {
-            const char = characters.find((c) => c.id === player.characterId);
-            const charName = getCharacterName(char, player.gender, locale) || player.name;
-            return (
-              <div key={i} className={`glass-card p-4 flex items-center gap-3 ${i === 0 ? 'border-accent-amber/30 animate-glow-pulse' : ''}`}>
-                <span className="font-bold text-lg w-8 text-center">{i === 0 ? '👑' : `#${i + 1}`}</span>
-                <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: player.color }} />
-                <div className="flex-1 min-w-0">
-                  {player.nameWasEmpty ? (
-                    <input
-                      type="text"
-                      value={player.name}
-                      onChange={(e) => updatePlayerName(player._origIdx, e.target.value)}
-                      className="input w-full text-sm py-1 mb-0.5"
-                      maxLength={20}
-                      id={`edit-name-${player._origIdx}`}
-                    />
-                  ) : (
-                    <div className="font-medium truncate">{player.name}</div>
-                  )}
-                  <div className="text-text-muted text-xs">{char && !char.noGender ? `${GENDER_ICON[player.gender ?? 'male']} ` : '⚪ '}{charName} · {CLASS_LABEL[player.class1]}{player.isSuperMunchkin && player.class2 ? ` + ${CLASS_LABEL[player.class2]}` : ''}</div>
-                </div>
-                <div className="font-heading font-bold text-2xl">Lv.{player.level}</div>
-              </div>
-            );
-          })}
-        </div>
-        <div className="flex gap-3">
-          <button onClick={() => setShowShare(true)} className="btn btn-primary flex-1" id="btn-share-results">{t('shareResults')}</button>
-          <button onClick={() => setPhase(PHASES.PLAYING)} className="btn btn-secondary flex-1" id="btn-edit-scores">{t('editScores')}</button>
-          <button onClick={newGame} className="btn btn-secondary flex-1" id="btn-new-game">{t('playAgain')}</button>
-        </div>
-        {showShare && (
-          <ShareCard gameName={config.name} gameIcon={config.icon}
-            players={sortedPlayers.map((p, i) => ({ name: p.name, score: p.level, color: p.color, isWinner: i === 0 }))}
-            funStat={`${players.length} ${t('munchkin_adventurers')} · ⚔️ ${t('munchkin_wins', { player: winnerCharName })}`}
-            onClose={() => setShowShare(false)} />
-        )}
-      </div>
+      <GameOverScreen
+        config={config}
+        players={sortedPlayers.map((p, i) => ({ name: p.name, score: p.level, color: p.color, isWinner: i === 0 }))}
+        funStat={`${players.length} ${t('munchkin_adventurers')} · ⚔️ ${t('munchkin_wins', { player: winnerCharName })}`}
+        onEditScores={() => setPhase(PHASES.PLAYING)}
+        onNewGame={newGame}
+      />
     );
   }
 
