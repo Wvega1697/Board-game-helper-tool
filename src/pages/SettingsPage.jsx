@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
 import { useI18n } from '../i18n/index.jsx';
 import { useBgg } from '../hooks/BggContext.jsx';
 import { getStoredUsername } from '../utils/bggConfig.js';
@@ -7,7 +6,6 @@ import { showToast } from '../components/Toast.jsx';
 
 export default function SettingsPage() {
   const { t } = useI18n();
-  const navigate = useNavigate();
   const { isLoggedIn, isLoggingIn, login, logout } = useBgg();
 
   const [username, setUsername] = useState('');
@@ -41,12 +39,7 @@ export default function SettingsPage() {
 
   return (
     <div className="space-y-6 animate-fade-in">
-      <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="btn btn-secondary" id="btn-back" aria-label="Back">
-          ←
-        </button>
-        <h1 className="font-heading text-xl font-bold text-text-primary">⚙️ {t('settings')}</h1>
-      </div>
+      <h1 className="font-heading text-xl font-bold text-text-primary">⚙️ {t('settings')}</h1>
 
       {/* BGG Account section */}
       <section className="glass-card p-5 space-y-4">
