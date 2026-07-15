@@ -2,56 +2,74 @@ import { useRef, useState, useEffect, useCallback } from 'react';
 import { useI18n } from '../i18n/index.jsx';
 import { captureAndShare } from '../utils/share.js';
 import { getBggPlays, getGameImages } from '../utils/bggApi.js';
-import { getStoredUsername } from '../utils/bggConfig.js';
+import { getStoredUsername, BGG_WORKER_URL } from '../utils/bggConfig.js';
 
 /**
- * Returns { mindate, maxdate, label } for the previous calendar month.
- * e.g. called on July 3 → { mindate:'2026-06-01', maxdate:'2026-06-30', label:'June 2026' }
+ * Returns { mindate, maxdate, label, cacheKey } for the previous calendar month.
+ * @param {string} locale - BCP 47 locale tag e.g. 'es', 'en'
  */
-function prevMonthRange() {
+function prevMonthRange(locale) {
   const now = new Date();
   const first = new Date(now.getFullYear(), now.getMonth() - 1, 1);
   const last = new Date(now.getFullYear(), now.getMonth(), 0);
   const pad = (n) => String(n).padStart(2, '0');
   const fmt = (d) => `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`;
-  const label = first.toLocaleString(undefined, { month: 'long', year: 'numeric' });
-  return { mindate: fmt(first), maxdate: fmt(last), label };
+  const label = first.toLocaleString(locale, { month: 'long', year: 'numeric' });
+  const cacheKey = `recap_${first.getFullYear()}_${pad(first.getMonth() + 1)}`;
+  return { mindate: fmt(first), maxdate: fmt(last), label, cacheKey };
 }
+
+/** Route a BGG CDN image through the CF Worker so html-to-image can inline it (no CORS block). */
+function proxyImg(url) {
+  if (!url) return null;
+  return `${BGG_WORKER_URL}/bgg/img?url=${encodeURIComponent(url)}`;
+}
+
+const LS_RECAP = (key) => `bgg_${key}`;
 
 /**
  * MonthlyRecap — modal overlay showing last month's board game stats + cover grid.
  * Follows the ShareCard pattern: everything inside `cardRef` is captured as an image.
+ *
+ * Caching: aggregated stats are stored in localStorage keyed by month so subsequent
+ * opens within the same month don't re-call BGG.
  */
 export default function MonthlyRecap({ onClose }) {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const cardRef = useRef(null);
   const [isSharing, setIsSharing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [stats, setStats] = useState(null); // { totalPlays, wins, newGames, games: [{objectId, name, count, image}] }
+  const [stats, setStats] = useState(null);
 
-  const { mindate, maxdate, label } = prevMonthRange();
+  const { mindate, maxdate, label, cacheKey } = prevMonthRange(locale);
   const monthTitle = label.toUpperCase();
 
   const load = useCallback(async () => {
     setLoading(true);
     setError(null);
     try {
+      // ponytail: past month data never changes — serve from cache if present
+      const cached = localStorage.getItem(LS_RECAP(cacheKey));
+      if (cached) {
+        setStats(JSON.parse(cached));
+        setLoading(false);
+        return;
+      }
+
       const username = getStoredUsername();
       const data = await getBggPlays({ username, mindate, maxdate });
       const plays = data.plays ?? [];
 
-      // Aggregate stats
       let totalPlays = 0;
       let wins = 0;
       let newGames = 0;
-      const gameMap = {}; // objectId → { name, count }
+      const gameMap = {};
 
       for (const play of plays) {
         const qty = play.quantity ?? 1;
         totalPlays += qty;
 
-        // Find this user's player entry
         const myPlayer = play.players?.find(
           (p) => p.username?.toLowerCase() === username.toLowerCase()
         );
@@ -65,12 +83,10 @@ export default function MonthlyRecap({ onClose }) {
         }
       }
 
-      // Sort games by play count desc
       const sortedGames = Object.entries(gameMap)
         .map(([objectId, { name, count }]) => ({ objectId, name, count, image: null }))
         .sort((a, b) => b.count - a.count);
 
-      // Batch-fetch images for all games
       const ids = sortedGames.map((g) => g.objectId);
       const images = await getGameImages(ids);
       const imageMap = Object.fromEntries(images.map((i) => [String(i.bgg_id), i.image]));
@@ -78,13 +94,16 @@ export default function MonthlyRecap({ onClose }) {
         g.image = imageMap[String(g.objectId)] ?? null;
       }
 
-      setStats({ totalPlays, wins, newGames, games: sortedGames });
+      const result = { totalPlays, wins, newGames, games: sortedGames };
+      // Cache indefinitely — this month is over, data won't change
+      try { localStorage.setItem(LS_RECAP(cacheKey), JSON.stringify(result)); } catch { /* storage full */ }
+      setStats(result);
     } catch (err) {
       setError(err.message);
     } finally {
       setLoading(false);
     }
-  }, [mindate, maxdate]);
+  }, [mindate, maxdate, cacheKey]);
 
   useEffect(() => { load(); }, [load]);
 
@@ -96,6 +115,9 @@ export default function MonthlyRecap({ onClose }) {
         fileName: `recap-${mindate.slice(0, 7)}.png`,
         title: monthTitle,
         text: `My board games in ${label}`,
+        // skipFonts avoids the cross-origin Google Fonts CSS CORS error in html-to-image;
+        // fonts are already rendered in the browser so the image still looks correct.
+        skipFonts: true,
       });
     } catch (err) {
       console.error('Share failed:', err);
@@ -154,7 +176,6 @@ export default function MonthlyRecap({ onClose }) {
 
           {!loading && !error && stats && (
             <>
-              {/* Stats row */}
               {stats.totalPlays === 0 ? (
                 <p style={{ textAlign: 'center', color: '#64748b', fontSize: '0.85rem', padding: '20px 0' }}>
                   {t('recapNoPlays')}
@@ -166,7 +187,7 @@ export default function MonthlyRecap({ onClose }) {
                       { emoji: '🎲', label: t('recapPlayed'), value: stats.totalPlays },
                       { emoji: '👑', label: t('recapWins'), value: stats.wins },
                       { emoji: '🆕', label: t('recapNew'), value: stats.newGames },
-                    ].map(({ emoji, label: l, value }) => (
+                    ].filter(({ value, label: l }) => value > 0 || l === t('recapPlayed')).map(({ emoji, label: l, value }) => (
                       <div key={l} style={{ textAlign: 'center' }}>
                         <div style={{ fontSize: '1.4rem' }}>{emoji}</div>
                         <div style={{ color: '#94a3b8', fontSize: '0.65rem', textTransform: 'uppercase', letterSpacing: '0.05em', marginTop: '2px' }}>{l}</div>
@@ -175,10 +196,8 @@ export default function MonthlyRecap({ onClose }) {
                     ))}
                   </div>
 
-                  {/* Separator */}
                   <div style={{ height: '1px', background: 'rgba(255,255,255,0.07)', marginBottom: '14px' }} />
 
-                  {/* Game grid — adaptive: 5 cols on wide, 3 on narrow via CSS grid auto-fill */}
                   <div style={{
                     display: 'grid',
                     gridTemplateColumns: 'repeat(auto-fill, minmax(min(18%, 60px), 1fr))',
@@ -197,7 +216,7 @@ export default function MonthlyRecap({ onClose }) {
                       >
                         {game.image ? (
                           <img
-                            src={game.image}
+                            src={proxyImg(game.image)}
                             alt={game.name}
                             crossOrigin="anonymous"
                             style={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
@@ -213,8 +232,7 @@ export default function MonthlyRecap({ onClose }) {
                             {game.name}
                           </div>
                         )}
-                        {/* Play count badge */}
-                        {game.count > 1 && (
+                        {game.count >= 1 && (
                           <div style={{
                             position: 'absolute', bottom: '3px', right: '3px',
                             background: 'rgba(0,0,0,0.72)',
@@ -236,7 +254,6 @@ export default function MonthlyRecap({ onClose }) {
             </>
           )}
 
-          {/* Branding */}
           <div style={{ textAlign: 'center', marginTop: '14px', color: 'rgba(100,116,139,0.6)', fontSize: '10px' }}>
             🎲 Boardgame Helper
           </div>

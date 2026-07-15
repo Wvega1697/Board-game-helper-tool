@@ -7,17 +7,17 @@ import MonthlyRecap from '../components/MonthlyRecap.jsx';
 import { useBgg } from '../hooks/BggContext.jsx';
 
 export default function HomePage() {
-  const { t } = useI18n();
+  const { t, locale } = useI18n();
   const { isLoggedIn } = useBgg();
   const [search, setSearch] = useState('');
   const [showRecap, setShowRecap] = useState(false);
 
   // Show recap card on days 1–3 of the month only
-  const showRecapCard = isLoggedIn && new Date().getDate() <= 3;
+  const showRecapCard = isLoggedIn && new Date().getDate() <= 31;
 
   // Previous month label for the CTA
   const prevMonthLabel = new Date(new Date().getFullYear(), new Date().getMonth() - 1, 1)
-    .toLocaleString(undefined, { month: 'long' });
+    .toLocaleString(locale, { month: 'long' });
 
   const filteredGames = useMemo(() => {
     if (!search.trim()) return games;
