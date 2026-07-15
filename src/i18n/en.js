@@ -262,6 +262,7 @@ const en = {
   bggLogout: 'Disconnect',
   bggDisclaimer: 'BGG does not offer an official API for logging plays. This feature uses an internal endpoint that may change without notice.',
   bggAttribution: 'Game data provided by the BoardGameGeek XML API.',
+  bggCcLicense: 'Game descriptions may include text available under CC BY-NC-SA 3.0.',
   bggLoginSuccess: 'Connected to BGG successfully!',
   bggLoginError: 'BGG login failed',
   bggPlayLogged: 'Play logged to BGG! 🎲',

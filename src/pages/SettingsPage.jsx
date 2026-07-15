@@ -111,10 +111,6 @@ export default function SettingsPage() {
         )}
       </section>
 
-      {/* Attribution */}
-      <p className="text-text-muted text-xs text-center px-4">
-        {t('bggAttribution')}
-      </p>
     </div>
   );
 }

@@ -107,8 +107,23 @@ export default function Layout() {
         <Outlet />
       </main>
 
-      {/* Footer (minimal) */}
-      <footer className="py-4 text-center text-text-muted text-xs">
+      {/* Footer — BGG attribution required by XML API Terms of Use */}
+      <footer className="py-5 px-5 text-center text-text-muted text-xs space-y-2 border-t border-white/5">
+        <a
+          href="https://boardgamegeek.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          className="inline-block opacity-70 hover:opacity-100 transition-opacity"
+          aria-label="Powered by BoardGameGeek"
+        >
+          <img
+            src="/images/powered-by-bgg.svg"
+            alt="Powered by BGG"
+            className="h-6 w-auto mx-auto"
+          />
+        </a>
+        <p>{t('bggAttribution')}</p>
+        <p>{t('bggCcLicense')}</p>
         <p>Boardgame Helper © {new Date().getFullYear()}</p>
       </footer>
     </div>

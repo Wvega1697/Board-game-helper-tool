@@ -262,6 +262,7 @@ const es = {
   bggLogout: 'Desconectar',
   bggDisclaimer: 'BGG no ofrece una API oficial para registrar partidas. Esta función usa un endpoint interno que puede cambiar sin previo aviso.',
   bggAttribution: 'Datos de juegos provistos por la API XML de BoardGameGeek.',
+  bggCcLicense: 'Las descripciones de juegos pueden incluir texto disponible bajo CC BY-NC-SA 3.0.',
   bggLoginSuccess: '¡Conectado a BGG exitosamente!',
   bggLoginError: 'Error al conectar a BGG',
   bggPlayLogged: '¡Partida registrada en BGG! 🎲',
