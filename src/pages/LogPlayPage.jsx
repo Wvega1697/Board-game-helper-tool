@@ -334,9 +334,6 @@ export default function LogPlayPage() {
     <div className="space-y-4 animate-fade-in">
       {/* Header */}
       <div className="flex items-center gap-3">
-        <button onClick={() => navigate(-1)} className="btn btn-secondary" id="btn-back" aria-label="Back">
-          ←
-        </button>
         <h1 className="font-heading text-xl font-bold text-text-primary">📝 {t('logPlayTitle')}</h1>
       </div>
 
