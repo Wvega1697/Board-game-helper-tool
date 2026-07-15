@@ -69,3 +69,41 @@ export async function searchGames(query) {
     year_published: g.year_published ?? null,
   }));
 }
+
+/**
+ * Fetch BGG play history for a user or a specific game.
+ * Supply `username` OR `id` + `type`.
+ * @param {object} opts
+ * @param {string} [opts.username]
+ * @param {string} [opts.mindate] - 'YYYY-MM-DD'
+ * @param {string} [opts.maxdate] - 'YYYY-MM-DD'
+ * @param {number} [opts.page=1]
+ * @returns {Promise<{username: string|null, total: number, page: number, plays: object[]}>}
+ */
+export async function getBggPlays({ username, mindate, maxdate, page = 1 } = {}) {
+  const url = new URL(`${BGG_WORKER_URL}/bgg/plays`);
+  if (username) url.searchParams.set('username', username);
+  if (mindate) url.searchParams.set('mindate', mindate);
+  if (maxdate) url.searchParams.set('maxdate', maxdate);
+  url.searchParams.set('page', page);
+  // ponytail: single page only (100 plays max/month); upgrade = paginate in a loop
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`BGG Plays fetch failed: ${res.status}`);
+  return res.json();
+}
+
+/**
+ * Batch-fetch game images from Supabase games_cache via CF Worker.
+ * Returns only the games that exist in the cache; missing ones are absent from the result.
+ * @param {Array<string|number>} bggIds
+ * @returns {Promise<Array<{bgg_id: string, name: string, image: string}>>}
+ */
+export async function getGameImages(bggIds) {
+  if (!bggIds?.length) return [];
+  const url = new URL(`${BGG_WORKER_URL}/bgg/game-images`);
+  url.searchParams.set('ids', bggIds.join(','));
+  const res = await fetch(url.toString());
+  if (!res.ok) throw new Error(`Game images fetch failed: ${res.status}`);
+  const data = await res.json();
+  return Array.isArray(data) ? data : [];
+}
