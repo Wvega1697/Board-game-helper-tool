@@ -244,6 +244,15 @@ const en = {
   harmonies_ref_rivers: 'Longest river: 1→1, 2→2, 3→4, 4→7, 5→11, 6→15, then +4 per token beyond 6.',
   harmonies_ref_animals: 'Score the VP indicated on the topmost space without an animal cube. A card with all cubes still on it scores 0 points.',
 
+  // Rolling Realms
+  rr_description: 'Roll two dice and earn stars across mini-games inspired by Stonemaier classics!',
+  rr_pickRealms: 'Realms this round',
+  rr_random: 'Random',
+  rr_filledSquares: 'filled squares',
+  rr_unspentResources: 'Unspent resources (0.1 ★ each)',
+  rr_tiebreakHint: 'Tiebreakers: highest round 3 → round 2 → round 1',
+  rr_showResults: 'Show Results',
+
   // BGG Integration
   logToBgg: 'Log to BGG',
   logPlay: 'Log Play',

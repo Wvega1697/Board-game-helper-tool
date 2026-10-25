@@ -244,6 +244,15 @@ const es = {
   harmonies_ref_rivers: 'Río más largo: 1→1, 2→2, 3→4, 4→7, 5→11, 6→15, luego +4 por ficha más allá de 6.',
   harmonies_ref_animals: 'Suma los PV indicados en el espacio superior sin cubo de animal. Una carta con todos sus cubos vale 0 puntos.',
 
+  // Rolling Realms
+  rr_description: '¡Lanza dos dados y gana estrellas en minijuegos inspirados en clásicos de Stonemaier!',
+  rr_pickRealms: 'Reinos de esta ronda',
+  rr_random: 'Aleatorio',
+  rr_filledSquares: 'casillas rellenadas',
+  rr_unspentResources: 'Recursos sin gastar (0.1 ★ c/u)',
+  rr_tiebreakHint: 'Desempate: mayor ronda 3 → ronda 2 → ronda 1',
+  rr_showResults: 'Mostrar Resultados',
+
   // BGG Integration
   logToBgg: 'Registrar en BGG',
   logPlay: 'Registrar Partida',
