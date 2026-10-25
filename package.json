@@ -5,12 +5,15 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
+    "dev:secure": "bws run -- \"pnpm dev\"",
     "build": "vite build",
     "lint": "oxlint",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@blobatar/react": "^2.7.0",
     "@vercel/analytics": "^2.0.1",
+    "blobatar": "^2.7.0",
     "html-to-image": "^1.11.13",
     "react": "^19.2.7",
     "react-dom": "^19.2.7",

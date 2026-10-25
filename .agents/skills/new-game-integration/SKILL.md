@@ -32,6 +32,12 @@ file below.
 - Do not open an editor until you can fill in the checklist in Step 1 from
   the source material alone. Guessing a scoring rule and fixing it twice later
   costs more than reading it twice now.
+- Folders exported by Board Game Translator contain `manual.md` (rulebook),
+  `translations.csv` (`id,photo,en,es` — one row per card/text block; parse
+  `data/*.js` from this) and `translations.md` (same rows, with
+  `⚠ <term>` in the heading where a glossary term was missing from the ES
+  text). Treat ⚠ rows as unverified: check them against `manual.md` before
+  trusting the ES wording.
 
 ### Images in the resource folder — read, then discard from context
 
