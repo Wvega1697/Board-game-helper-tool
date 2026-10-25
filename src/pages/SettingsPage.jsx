@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { useI18n } from '../i18n/index.jsx';
 import { useBgg } from '../hooks/BggContext.jsx';
+import { Blobatar } from '@blobatar/react';
 import { getStoredUsername } from '../utils/bggConfig.js';
 import { showToast } from '../components/Toast.jsx';
 
@@ -54,7 +55,7 @@ export default function SettingsPage() {
       {isLoggedIn ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-              <span className="text-green-400 text-xl">✅</span>
+              <Blobatar name={getStoredUsername()} size={40} className="rounded-full" />
               <div>
                 <p className="text-text-primary font-medium">{t('bggConnected')}</p>
                 <p className="text-text-muted text-sm">@{getStoredUsername()}</p>

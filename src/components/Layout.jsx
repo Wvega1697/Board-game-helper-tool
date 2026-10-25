@@ -3,11 +3,23 @@ import { Outlet, useNavigate, useLocation } from 'react-router-dom';
 import { useI18n } from '../i18n/index.jsx';
 import LanguageSwitcher from './LanguageSwitcher.jsx';
 import { getGame } from '../games/index.js';
+import { Blobatar } from '@blobatar/react';
+import { useBgg } from '../hooks/BggContext.jsx';
+import { getStoredUsername } from '../utils/bggConfig.js';
+
+// ponytail: random seed is persisted so the guest avatar stays stable across reloads
+function guestSeed() {
+  let s = localStorage.getItem('guest_avatar_seed');
+  if (!s) localStorage.setItem('guest_avatar_seed', (s = crypto.randomUUID()));
+  return s;
+}
 
 export default function Layout() {
   const navigate = useNavigate();
   const location = useLocation();
   const { t } = useI18n();
+  const { isLoggedIn } = useBgg(); // re-render on login/logout
+  const avatarName = (isLoggedIn && getStoredUsername()) || guestSeed();
   const isHome = location.pathname === '/';
   const [sessionVer, setSessionVer] = useState(0);
 
@@ -61,7 +73,7 @@ export default function Layout() {
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
               id="btn-home"
             >
-              <span className="text-2xl">🎲</span>
+              <Blobatar name={avatarName} size={32} className="rounded-full" />
               <h1 className="font-heading text-lg font-bold gradient-text">
                 {t('appName')}
               </h1>
