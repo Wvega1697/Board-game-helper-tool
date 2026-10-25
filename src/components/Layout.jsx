@@ -4,6 +4,7 @@ import { useI18n } from '../i18n/index.jsx';
 import LanguageSwitcher from './LanguageSwitcher.jsx';
 import { getGame } from '../games/index.js';
 import { Blobatar } from '@blobatar/react';
+import 'blobatar/motion.css';
 import { useBgg } from '../hooks/BggContext.jsx';
 import { getStoredUsername } from '../utils/bggConfig.js';
 
@@ -73,7 +74,7 @@ export default function Layout() {
               className="flex items-center gap-2 hover:opacity-80 transition-opacity"
               id="btn-home"
             >
-              <Blobatar name={avatarName} size={32} className="rounded-full" />
+              <Blobatar name={avatarName} size={32} animate="always" className="rounded-full" />
               <h1 className="font-heading text-lg font-bold gradient-text">
                 {t('appName')}
               </h1>

@@ -55,7 +55,7 @@ export default function SettingsPage() {
       {isLoggedIn ? (
           <div className="space-y-4">
             <div className="flex items-center gap-3 p-3 rounded-lg bg-green-500/10 border border-green-500/20">
-              <Blobatar name={getStoredUsername()} size={40} className="rounded-full" />
+              <Blobatar name={getStoredUsername()} size={40} animate="always" className="rounded-full" />
               <div>
                 <p className="text-text-primary font-medium">{t('bggConnected')}</p>
                 <p className="text-text-muted text-sm">@{getStoredUsername()}</p>

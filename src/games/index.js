@@ -5,6 +5,7 @@ import wpConfig from './wrong-party/config.js';
 import architectsConfig from './7-wonders-architects/config.js';
 import everdellConfig from './everdell/config.js';
 import harmoniesConfig from './harmonies/config.js';
+import rollingRealmsConfig from './rolling-realms/config.js';
 
 /**
  * Central game registry.
@@ -17,7 +18,8 @@ export const games = [
   wpConfig,
   architectsConfig,
   everdellConfig,
-  harmoniesConfig
+  harmoniesConfig,
+  rollingRealmsConfig
 ].sort(() => Math.random() - 0.5);
 
 export const getGame = (id) => games.find((g) => g.id === id);
@@ -35,6 +37,7 @@ export const loadCalculator = (id) => {
     '7-wonders-architects': () => import('./7-wonders-architects/Calculator.jsx'),
     'everdell': () => import('./everdell/Calculator.jsx'),
     'harmonies': () => import('./harmonies/Calculator.jsx'),
+    'rolling-realms': () => import('./rolling-realms/Calculator.jsx'),
   };
   return loaders[id]?.();
 };
