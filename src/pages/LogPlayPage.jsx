@@ -11,6 +11,7 @@ import PinPromptModal from '../components/PinPromptModal.jsx';
 
 // ponytail: tiny, no abstraction needed
 const LS_LOCATIONS = 'bgg_locations';
+const LS_CUSTOM_COLORS = 'bgg_custom_colors';
 
 function getStoredList(key) {
   try { return JSON.parse(localStorage.getItem(key) || '[]'); } catch { return []; }
@@ -34,6 +35,118 @@ const COLOR_HEX = COLOR_NAMES.reduce((acc, name, i) => {
   acc[name] = PLAYER_COLORS[i];
   return acc;
 }, {});
+
+// --- Color combobox: free-text + preset dropdown ---
+function ColorCombobox({ value, onChange, presetNames, presetHex, presetI18n, customColors, t, id }) {
+  // Display label: translated for presets, raw text for custom
+  const toDisplay = (v) => presetI18n[v] ? t(presetI18n[v]) : v;
+
+  const [open, setOpen] = useState(false);
+  const [input, setInput] = useState(() => toDisplay(value));
+  const closeTimer = useRef(null);
+
+  // Sync input when external value changes (e.g. auto-assign on add-player)
+  const prevValue = useRef(value);
+  if (prevValue.current !== value && !open) {
+    prevValue.current = value;
+    setInput(toDisplay(value));
+  }
+
+  const query = input.toLowerCase();
+  const filteredCustom = customColors.filter(
+    (c) => c.toLowerCase().includes(query) && c !== value
+  );
+  const filteredPresets = presetNames.filter(
+    (c) => t(presetI18n[c]).toLowerCase().includes(query)
+  );
+
+  const commit = (englishKey) => {
+    onChange(englishKey);
+    setInput(toDisplay(englishKey));
+    setOpen(false);
+  };
+
+  const handleBlur = () => {
+    closeTimer.current = setTimeout(() => {
+      const trimmed = input.trim();
+      if (!trimmed) return;
+      // If user typed a translated preset label, map back to English key
+      const matched = presetNames.find(
+        (c) => t(presetI18n[c]).toLowerCase() === trimmed.toLowerCase()
+      );
+      commit(matched || trimmed);
+      setOpen(false);
+    }, 150);
+  };
+
+  const handleMouseDown = (name) => {
+    clearTimeout(closeTimer.current);
+    commit(name);
+  };
+
+  const isPreset = presetHex[value] != null;
+
+  return (
+    <div className="flex items-center gap-2 relative flex-1">
+      {/* Color dot — only for presets */}
+      {isPreset && (
+        <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: presetHex[value] }} />
+      )}
+      <div className="relative flex-1">
+        <input
+          type="text"
+          value={input}
+          onChange={(e) => { setInput(e.target.value); setOpen(true); }}
+          onFocus={() => setOpen(true)}
+          onBlur={handleBlur}
+          className="input w-full text-sm pr-6"
+          id={id}
+          autoComplete="off"
+        />
+        {/* Chevron */}
+        <span
+          className="absolute right-2 top-1/2 -translate-y-1/2 text-text-muted pointer-events-none select-none text-xs"
+          aria-hidden
+        >▾</span>
+        {open && (filteredCustom.length > 0 || filteredPresets.length > 0) && (
+          <div className="absolute z-50 left-0 right-0 top-full mt-1 glass-card overflow-auto max-h-52 border border-border-glass rounded-lg shadow-xl">
+            {/* Custom entries */}
+            {filteredCustom.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onMouseDown={() => handleMouseDown(c)}
+                className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors ${
+                  c === value ? 'bg-white/10 text-text-primary' : 'text-text-secondary'
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+            {/* Separator */}
+            {filteredCustom.length > 0 && filteredPresets.length > 0 && (
+              <div className="mx-3 my-1 border-t border-border-glass" />
+            )}
+            {/* Preset entries */}
+            {filteredPresets.map((c) => (
+              <button
+                key={c}
+                type="button"
+                onMouseDown={() => handleMouseDown(c)}
+                className={`w-full text-left px-3 py-2 text-sm hover:bg-white/10 transition-colors flex items-center gap-2 ${
+                  c === value ? 'bg-white/10 text-text-primary' : 'text-text-secondary'
+                }`}
+              >
+                <span className="w-2.5 h-2.5 rounded-full flex-shrink-0" style={{ backgroundColor: presetHex[c] }} />
+                {t(presetI18n[c])}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
 
 // --- Collapsible Section ---
 function AccordionSection({ title, open, onToggle, children }) {
@@ -215,6 +328,11 @@ export default function LogPlayPage() {
 
       // Persist location + player profiles
       if (location.trim()) saveToList(LS_LOCATIONS, location.trim());
+      // Save any custom colors used in this play
+      players.forEach((_, i) => {
+        const c = playerExtras[i]?.color;
+        if (c && !COLOR_HEX[c]) saveToList(LS_CUSTOM_COLORS, c);
+      });
       players.forEach((p, i) => {
         const bggUsername = playerExtras[i]?.bggUsername || '';
         savePlayerProfile(p.name, bggUsername);
@@ -243,7 +361,6 @@ export default function LogPlayPage() {
   const renderPlayerExtra = (index) => {
     const ex = playerExtras[index] || {};
     const colorName = ex.color || COLOR_NAMES[index % COLOR_NAMES.length];
-    const colorHex = COLOR_HEX[colorName] || PLAYER_COLORS[index % PLAYER_COLORS.length];
     const profile = pendingPlayers?.[index]
       ? getProfileForName(pendingPlayers[index]?.name)
       : null;
@@ -251,19 +368,16 @@ export default function LogPlayPage() {
     return (
       <div className="space-y-2">
         {/* Team / Color */}
-        <div className="flex items-center gap-2">
-          <div className="w-3 h-3 rounded-full flex-shrink-0" style={{ backgroundColor: colorHex }} />
-          <select
-            value={colorName}
-            onChange={(e) => updateExtra(index, 'color', e.target.value)}
-            className="input flex-1 text-sm"
-            id={`player-color-${index}`}
-          >
-            {COLOR_NAMES.map((c) => (
-              <option key={c} value={c}>{t(COLOR_I18N_KEYS[c])}</option>
-            ))}
-          </select>
-        </div>
+        <ColorCombobox
+          value={colorName}
+          onChange={(name) => updateExtra(index, 'color', name)}
+          presetNames={COLOR_NAMES}
+          presetHex={COLOR_HEX}
+          presetI18n={COLOR_I18N_KEYS}
+          customColors={getStoredList(LS_CUSTOM_COLORS)}
+          t={t}
+          id={`player-color-${index}`}
+        />
 
         {/* BGG Username — combobox with saved profiles */}
         <input

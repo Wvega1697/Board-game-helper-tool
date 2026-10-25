@@ -8,7 +8,7 @@ import { toPng } from 'html-to-image';
  * @param {string} options.title - Share title
  * @param {string} options.text - Share text
  */
-export async function captureAndShare(element, { fileName = 'score-card.png', title = '', text = '' } = {}) {
+export async function captureAndShare(element, { fileName = 'score-card.png', title = '', text = '', skipFonts = false } = {}) {
   // Wait for fonts to be fully loaded
   if (document.fonts?.ready) {
     await document.fonts.ready;
@@ -21,6 +21,7 @@ export async function captureAndShare(element, { fileName = 'score-card.png', ti
     quality: 0.95,
     pixelRatio: 2,
     backgroundColor: '#0f0f1a',
+    skipFonts,
   });
 
   // Convert data URL to blob

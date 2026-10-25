@@ -295,6 +295,9 @@ export default function MunchkinCalculator() {
                 </div>
                 {isLowest && <span className="text-[10px] text-accent-amber font-semibold flex-shrink-0">▼ {t('munchkin_lowestLevel').toUpperCase()}</span>}
               </div>
+              {char && (
+                <p className="text-text-muted text-xs leading-snug -mt-1">{getCharacterPower(char, locale)}</p>
+              )}
 
               <div className="flex items-center gap-2 flex-wrap">
                 <button onClick={() => toggleClass1(playerIdx)} className={`text-sm px-3 py-1.5 rounded-full border font-medium transition-all ${CLASS_COLOR[player.class1]}`} id={`btn-class1-${playerIdx}`}>{CLASS_LABEL[player.class1]}</button>

@@ -322,6 +322,16 @@ const es = {
   colorGreen: 'Verde',
   colorRed: 'Rojo',
   colorOrange: 'Naranja',
+
+  // Resumen mensual
+  monthlyRecapCta: 'Ver tu resumen de {month}',
+  recapPlayed: 'Jugadas',
+  recapWins: 'Victorias',
+  recapNew: 'Nuevos',
+  recapLoading: 'Cargando tu resumen…',
+  recapNoPlays: 'Sin partidas registradas el mes pasado',
+  recapShare: 'Compartir resumen',
+  recapClose: 'Cerrar',
 };
 
 

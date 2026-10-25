@@ -322,6 +322,16 @@ const en = {
   colorGreen: 'Green',
   colorRed: 'Red',
   colorOrange: 'Orange',
+
+  // Monthly Recap
+  monthlyRecapCta: 'See your {month} recap',
+  recapPlayed: 'Played',
+  recapWins: 'Wins',
+  recapNew: 'New',
+  recapLoading: 'Loading your recap…',
+  recapNoPlays: 'No plays logged last month',
+  recapShare: 'Share recap',
+  recapClose: 'Close',
 };
 
 
