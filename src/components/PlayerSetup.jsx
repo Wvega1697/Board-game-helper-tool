@@ -12,6 +12,31 @@ const PLAYER_COLORS = [
   '#f97316', // orange
 ];
 
+const LAST_NAMES_KEY = 'bgh-last-player-names';
+
+const readSaved = (key) => {
+  try { return JSON.parse(sessionStorage.getItem(key)); } catch { return null; }
+};
+
+/** Enabled house rules: the saved ids (only ones this game still defines) or, if never saved, the defaults. */
+export function initialRules(houseRulesConfig, savedIds) {
+  const rules = houseRulesConfig || [];
+  if (!Array.isArray(savedIds)) return new Set(rules.filter((r) => r.default).map((r) => r.id));
+  return new Set(rules.filter((r) => savedIds.includes(r.id)).map((r) => r.id));
+}
+
+/**
+ * Starting player rows: reuse the last typed names (blank entries stay blank), padded to
+ * minPlayers and clamped to maxPlayers.
+ */
+export function initialPlayers(savedNames, minPlayers, maxPlayers) {
+  const names = Array.isArray(savedNames) ? savedNames.slice(0, maxPlayers) : [];
+  return Array.from({ length: Math.max(minPlayers, names.length) }, (_, i) => ({
+    name: names[i] ?? '',
+    color: PLAYER_COLORS[i % PLAYER_COLORS.length],
+  }));
+}
+
 /**
  * Reusable player setup component.
  * @param {Object} props
@@ -34,19 +59,12 @@ export default function PlayerSetup({
   onNameChange,
 }) {
   const { t, locale } = useI18n();
-  const [players, setPlayers] = useState(
-    Array.from({ length: minPlayers }, (_, i) => ({
-      name: '',
-      color: PLAYER_COLORS[i % PLAYER_COLORS.length],
-    }))
+  // Enabled house rules: last choice for this game's rule set, else the defaults
+  const rulesKey = `bgh-last-rules:${(houseRulesConfig || []).map((r) => r.id).join(',')}`;
+  const [enabledRules, setEnabledRules] = useState(() => initialRules(houseRulesConfig, readSaved(rulesKey)));
+  const [players, setPlayers] = useState(() =>
+    initialPlayers(readSaved(LAST_NAMES_KEY), minPlayers, enabledRules.has('morePlayers') ? 8 : maxPlayers)
   );
-
-  // Initialise enabled house rules from their defaults
-  const [enabledRules, setEnabledRules] = useState(() => {
-    const set = new Set();
-    (houseRulesConfig || []).forEach((r) => { if (r.default) set.add(r.id); });
-    return set;
-  });
 
   const effectiveMaxPlayers = enabledRules.has('morePlayers') ? 8 : maxPlayers;
 
@@ -96,6 +114,9 @@ export default function PlayerSetup({
       name: p.name.trim() || `${noun} ${i + 1}`,
       nameWasEmpty: !p.name.trim(),
     }));
+    // Remember what was typed (blanks stay blank so each game's themed fallback name still applies)
+    try { sessionStorage.setItem(LAST_NAMES_KEY, JSON.stringify(players.map((p) => p.name.trim()))); } catch { /* storage unavailable */ }
+    try { sessionStorage.setItem(rulesKey, JSON.stringify([...enabledRules])); } catch { /* storage unavailable */ }
     onStart(finalPlayers, enabledRules);
   };
 

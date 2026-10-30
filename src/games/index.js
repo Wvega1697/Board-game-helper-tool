@@ -6,6 +6,7 @@ import architectsConfig from './7-wonders-architects/config.js';
 import everdellConfig from './everdell/config.js';
 import harmoniesConfig from './harmonies/config.js';
 import rollingRealmsConfig from './rolling-realms/config.js';
+import excaliburConfig from './excalibur/config.js';
 
 /**
  * Central game registry.
@@ -19,7 +20,8 @@ export const games = [
   architectsConfig,
   everdellConfig,
   harmoniesConfig,
-  rollingRealmsConfig
+  rollingRealmsConfig,
+  excaliburConfig
 ].sort(() => Math.random() - 0.5);
 
 export const getGame = (id) => games.find((g) => g.id === id);
@@ -38,6 +40,7 @@ export const loadCalculator = (id) => {
     'everdell': () => import('./everdell/Calculator.jsx'),
     'harmonies': () => import('./harmonies/Calculator.jsx'),
     'rolling-realms': () => import('./rolling-realms/Calculator.jsx'),
+    'excalibur': () => import('./excalibur/Calculator.jsx'),
   };
   return loaders[id]?.();
 };

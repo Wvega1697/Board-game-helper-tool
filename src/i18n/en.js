@@ -253,6 +253,28 @@ const en = {
   rr_tiebreakHint: 'Tiebreakers: highest round 3 → round 2 → round 1',
   rr_showResults: 'Show Results',
 
+  // Excalibur
+  excalibur_description: 'Bluff, steal and swap chips — whoever holds Excalibur at the end rules the kingdom!',
+  excalibur_finalHolders: 'Who holds the swords?',
+  excalibur_hint: 'Pick the player holding each sword chip at game end.',
+  excalibur_excalibur: 'Excalibur',
+  excalibur_cursed: 'Cursed Blade',
+  excalibur_squire: 'Squire Sword',
+  excalibur_nobody: 'Nobody',
+  excalibur_showResults: 'Show Results',
+  excalibur_reference: 'Chip reference',
+  excalibur_inAvalon: 'In Avalon / trashed',
+  excalibur_squireLeft: 'Who sits to the left of the Squire Sword holder?',
+  excalibur_loserIs: 'Ultimate loser: {name}',
+  excalibur_sessionWins: 'Session wins',
+  excalibur_searchChips: 'Search chips…',
+  excalibur_searchNote: 'Tip: you can search a chip by its English or Spanish name.',
+  excalibur_chips: 'Chips',
+  excalibur_keywords: 'Glossary',
+  excalibur_normal: 'Excalibur claims its ruler!',
+  excalibur_tainted: 'Tainted win — one player held both blades',
+  excalibur_chaos: 'Kingdom in chaos — everybody loses!',
+
   // BGG Integration
   logToBgg: 'Log to BGG',
   logPlay: 'Log Play',
