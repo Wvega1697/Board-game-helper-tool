@@ -253,6 +253,28 @@ const es = {
   rr_tiebreakHint: 'Desempate: mayor ronda 3 → ronda 2 → ronda 1',
   rr_showResults: 'Mostrar Resultados',
 
+  // Excalibur
+  excalibur_description: 'Farolea, quita e intercambia fichas: ¡quien tenga Excalibur al final gobierna el reino!',
+  excalibur_finalHolders: '¿Quién tiene las espadas?',
+  excalibur_hint: 'Elige al jugador que tiene cada ficha de espada al final.',
+  excalibur_excalibur: 'Excalibur',
+  excalibur_cursed: 'Espada Maldita',
+  excalibur_squire: 'Espada del Escudero',
+  excalibur_nobody: 'Nadie',
+  excalibur_showResults: 'Mostrar Resultados',
+  excalibur_reference: 'Referencia de fichas',
+  excalibur_inAvalon: 'En Avalon / descartada',
+  excalibur_squireLeft: '¿Quién está a la izquierda del que tiene la Espada del Escudero?',
+  excalibur_loserIs: 'Perdedor definitivo: {name}',
+  excalibur_sessionWins: 'Victorias de la sesión',
+  excalibur_searchChips: 'Buscar fichas…',
+  excalibur_searchNote: 'Tip: puedes buscar una ficha por su nombre en inglés o en español.',
+  excalibur_chips: 'Fichas',
+  excalibur_keywords: 'Glosario',
+  excalibur_normal: '¡Excalibur ha elegido a su soberano!',
+  excalibur_tainted: 'Victoria manchada: un jugador tenía ambas espadas',
+  excalibur_chaos: 'Reino en caos: ¡todos pierden!',
+
   // BGG Integration
   logToBgg: 'Registrar en BGG',
   logPlay: 'Registrar Partida',
